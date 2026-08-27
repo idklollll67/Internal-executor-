@@ -546,201 +546,227 @@ if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
             pcall(function()
                 writefile(GlobalForcedFile, HttpService:JSONEncode(ForcedLockedList))
             end)
-            ShowNotification("Successfully force-deployed script to all users!", Color3.fromRGB(255, 120, 120))
+            
+            table.insert(SavedScriptsList, {name = ForceNameInput.Text, code = ForceCodeInput.Text, locked = true})
+            SaveConfigsToFile()
+            RefreshSavedScripts()
+            
             ForceNameInput.Text = ""
             ForceCodeInput.Text = ""
+            ShowNotification("Force-saved script globally!", Color3.fromRGB(255, 100, 100))
         end
     end)
 end
 
--- EXEC PANEL (SCRIPT EXECUTOR)
-local ExecInput = Instance.new("TextBox")
-ExecInput.Size = UDim2.new(1, 0, 1, -34)
-ExecInput.Position = UDim2.new(0, 0, 0, 0)
-ExecInput.BackgroundColor3 = Color3.fromRGB(12, 12, 15)
-ExecInput.Font = Enum.Font.Code
-ExecInput.MultiLine = true
-ExecInput.PlaceholderText = "-- Paste or write your script here..."
-ExecInput.Text = ""
-ExecInput.TextColor3 = Color3.fromRGB(240, 240, 245)
-ExecInput.TextSize = 9
-ExecInput.TextXAlignment = Enum.TextXAlignment.Left
-ExecInput.TextYAlignment = Enum.TextYAlignment.Top
-ExecInput.Parent = ExecPanel
+-- EXEC PANEL (With Clear Button added)
+local ExecBox = Instance.new("TextBox")
+ExecBox.Size = UDim2.new(1, 0, 1, -30)
+ExecBox.Position = UDim2.new(0, 0, 0, 0)
+ExecBox.BackgroundColor3 = Color3.fromRGB(12, 12, 15)
+ExecBox.Font = Enum.Font.Code
+ExecBox.MultiLine = true
+ExecBox.PlaceholderText = "-- Write Luau code here"
+ExecBox.Text = ""
+ExecBox.TextColor3 = Color3.fromRGB(240, 240, 245)
+ExecBox.TextSize = 8
+ExecBox.TextXAlignment = Enum.TextXAlignment.Left
+ExecBox.TextYAlignment = Enum.TextYAlignment.Top
+ExecBox.Parent = ExecPanel
 
-local ExecInputCorner = Instance.new("UICorner")
-ExecInputCorner.CornerRadius = UDim.new(0, 4)
-ExecInputCorner.Parent = ExecInput
+local ExecBoxCorner = Instance.new("UICorner")
+ExecBoxCorner.CornerRadius = UDim.new(0, 4)
+ExecBoxCorner.Parent = ExecBox
 
-local ExecButton = Instance.new("TextButton")
-ExecButton.Size = UDim2.new(0, 100, 0, 28)
-ExecButton.Position = UDim2.new(0, 0, 1, -28)
-ExecButton.BackgroundColor3 = Color3.fromRGB(22, 22, 28)
-ExecButton.Font = Enum.Font.GothamMedium
-ExecButton.Text = "Execute"
-ExecButton.TextColor3 = Color3.fromRGB(180, 220, 180)
-ExecButton.TextSize = 9
-ExecButton.Parent = ExecPanel
+local ExecActionBtn = Instance.new("TextButton")
+ExecActionBtn.Size = UDim2.new(0, 125, 0, 26)
+ExecActionBtn.Position = UDim2.new(0, 0, 1, -26)
+ExecActionBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+ExecActionBtn.Font = Enum.Font.GothamMedium
+ExecActionBtn.Text = "Execute"
+ExecActionBtn.TextColor3 = Color3.fromRGB(180, 220, 180)
+ExecActionBtn.TextSize = 9
+ExecActionBtn.Parent = ExecPanel
 
-local ExecBtnCorner = Instance.new("UICorner")
-ExecBtnCorner.CornerRadius = UDim.new(0, 4)
-ExecBtnCorner.Parent = ExecButton
+local ExecCorner = Instance.new("UICorner")
+ExecCorner.CornerRadius = UDim.new(0, 4)
+ExecCorner.Parent = ExecActionBtn
 
-local ClearExecButton = Instance.new("TextButton")
-ClearExecButton.Size = UDim2.new(0, 100, 0, 28)
-ClearExecButton.Position = UDim2.new(0, 108, 1, -28)
-ClearExecButton.BackgroundColor3 = Color3.fromRGB(22, 22, 28)
-ClearExecButton.Font = Enum.Font.GothamMedium
-ClearExecButton.Text = "Clear"
-ClearExecButton.TextColor3 = Color3.fromRGB(220, 160, 160)
-ClearExecButton.TextSize = 9
-ClearExecButton.Parent = ExecPanel
+local ClearExecBtn = Instance.new("TextButton")
+ClearExecBtn.Size = UDim2.new(0, 125, 0, 26)
+ClearExecBtn.Position = UDim2.new(1, -125, 1, -26)
+ClearExecBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+ClearExecBtn.Font = Enum.Font.GothamMedium
+ClearExecBtn.Text = "Clear"
+ClearExecBtn.TextColor3 = Color3.fromRGB(220, 160, 160)
+ClearExecBtn.TextSize = 9
+ClearExecBtn.Parent = ExecPanel
 
 local ClearExecCorner = Instance.new("UICorner")
 ClearExecCorner.CornerRadius = UDim.new(0, 4)
-ClearExecCorner.Parent = ClearExecButton
+ClearExecCorner.Parent = ClearExecBtn
 
-ExecButton.MouseButton1Click:Connect(function()
-    if ExecInput.Text ~= "" then
+ExecActionBtn.MouseButton1Click:Connect(function()
+    if ExecBox.Text ~= "" then
         pcall(function()
-            local fn = (loadstring or load)(ExecInput.Text)
+            local fn = (loadstring or load)(ExecBox.Text)
             if fn then task.spawn(fn) end
         end)
-        ShowNotification("Executed custom script!", Color3.fromRGB(150, 220, 150))
+        ShowNotification("Executed custom script", Color3.fromRGB(150, 220, 150))
     end
 end)
 
-ClearExecButton.MouseButton1Click:Connect(function()
-    ExecInput.Text = ""
+ClearExecBtn.MouseButton1Click:Connect(function()
+    ExecBox.Text = ""
     ShowNotification("Cleared executor", Color3.fromRGB(200, 200, 200))
 end)
 
--- SEARCH PANEL (SCRIPT HUB BROWSER)
-local SearchInput = Instance.new("TextBox")
-SearchInput.Size = UDim2.new(1, 0, 0, 26)
-SearchInput.BackgroundColor3 = Color3.fromRGB(12, 12, 15)
-SearchInput.Font = Enum.Font.Gotham
-SearchInput.PlaceholderText = "Search scripts or hubs..."
-SearchInput.Text = ""
-SearchInput.TextColor3 = Color3.fromRGB(240, 240, 245)
-SearchInput.TextSize = 9
-SearchInput.Parent = SearchPanel
+-- SEARCH PANEL (SCRIPTBLOX with Run, Save, and Copy buttons)
+local SearchBox = Instance.new("TextBox")
+SearchBox.Size = UDim2.new(1, 0, 0, 26)
+SearchBox.Position = UDim2.new(0, 0, 0, 0)
+SearchBox.BackgroundColor3 = Color3.fromRGB(12, 12, 15)
+SearchBox.Font = Enum.Font.Gotham
+SearchBox.PlaceholderText = "Search ScriptBlox and press Enter..."
+SearchBox.Text = ""
+SearchBox.TextColor3 = Color3.fromRGB(240, 240, 245)
+SearchBox.TextSize = 9
+SearchBox.TextXAlignment = Enum.TextXAlignment.Left
+SearchBox.Parent = SearchPanel
 
-local SearchCorner = Instance.new("UICorner")
-SearchCorner.CornerRadius = UDim.new(0, 4)
-SearchCorner.Parent = SearchInput
+local SearchBoxCorner = Instance.new("UICorner")
+SearchBoxCorner.CornerRadius = UDim.new(0, 4)
+SearchBoxCorner.Parent = SearchBox
 
-local HubScroll = Instance.new("ScrollingFrame")
-HubScroll.Size = UDim2.new(1, 0, 1, -30)
-HubScroll.Position = UDim2.new(0, 0, 0, 30)
-HubScroll.BackgroundTransparency = 1
-HubScroll.ScrollBarThickness = 2
-HubScroll.Parent = SearchPanel
+local SearchScroll = Instance.new("ScrollingFrame")
+SearchScroll.Size = UDim2.new(1, 0, 1, -30)
+SearchScroll.Position = UDim2.new(0, 0, 0, 30)
+SearchScroll.BackgroundTransparency = 1
+SearchScroll.ScrollBarThickness = 2
+SearchScroll.Parent = SearchPanel
 
-local HubLayout = Instance.new("UIListLayout")
-HubLayout.Padding = UDim.new(0, 4)
-HubLayout.Parent = HubScroll
+local SearchScrollLayout = Instance.new("UIListLayout")
+SearchScrollLayout.Padding = UDim.new(0, 4)
+SearchScrollLayout.Parent = SearchScroll
 
-local PublicHubs = {
-    {name = "Infinite Yield", desc = "The ultimate admin utility script.", code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()'},
-    {name = "Dex Explorer V2", desc = "Advanced object explorer for debugging.", code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/peyton2465/Dex/master/out.lua"))()'},
-    {name = "Remote Spy (Hydroxide)", desc = "Capture remotes, events, and arguments.", code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/Upbolt/Hydroxide/master/init.lua"))()'},
-    {name = "FPS Booster", desc = "Improves performance by stripping effects.", code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/CasperFlyModz/discord.gg-rips/main/FPSBooster.lua"))()'}
-}
-
-local function RenderHubList(filter)
-    for _, child in ipairs(HubScroll:GetChildren()) do
+SearchBox.FocusLost:Connect(function(enterPressed)
+    if not enterPressed or SearchBox.Text == "" then return end
+    for _, child in ipairs(SearchScroll:GetChildren()) do
         if child:IsA("Frame") then child:Destroy() end
     end
-    for _, hub in ipairs(PublicHubs) do
-        if not filter or filter == "" or string.find(string.lower(hub.name), string.lower(filter)) then
-            local card = Instance.new("Frame")
-            card.Size = UDim2.new(1, 0, 0, 38)
-            card.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
-            card.Parent = HubScroll
+    ShowNotification("Searching ScriptBlox...", Color3.fromRGB(220, 220, 150))
+    task.spawn(function()
+        local ok, res = pcall(function()
+            local req = request or syn.request or http_request
+            if not req then return end
+            local response = req({
+                Url = "https://scriptblox.com/api/script/search?q=" .. HttpService:UrlEncode(SearchBox.Text),
+                Method = "GET"
+            })
+            if response and response.Body then
+                return HttpService:JSONDecode(response.Body)
+            end
+        end)
+        if ok and res and res.result and res.result.scripts then
+            if #res.result.scripts == 0 then
+                ShowNotification("No scripts found.", Color3.fromRGB(220, 160, 160))
+                return
+            end
+            for _, scriptData in ipairs(res.result.scripts) do
+                local itemFrame = Instance.new("Frame")
+                itemFrame.Size = UDim2.new(1, 0, 0, 28)
+                itemFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+                itemFrame.Parent = SearchScroll
 
-            local cardCorner = Instance.new("UICorner")
-            cardCorner.CornerRadius = UDim.new(0, 4)
-            cardCorner.Parent = card
+                local itemCorner = Instance.new("UICorner")
+                itemCorner.CornerRadius = UDim.new(0, 4)
+                itemCorner.Parent = itemFrame
 
-            local nameLbl = Instance.new("TextLabel")
-            nameLbl.Size = UDim2.new(1, -120, 0, 16)
-            nameLbl.Position = UDim2.new(0, 8, 0, 3)
-            nameLbl.BackgroundTransparency = 1
-            nameLbl.Font = Enum.Font.GothamBold
-            nameLbl.Text = hub.name
-            nameLbl.TextColor3 = Color3.fromRGB(230, 230, 240)
-            nameLbl.TextSize = 9
-            nameLbl.TextXAlignment = Enum.TextXAlignment.Left
-            nameLbl.Parent = card
+                local label = Instance.new("TextLabel")
+                label.Size = UDim2.new(0, 110, 1, 0)
+                label.Position = UDim2.new(0, 8, 0, 0)
+                label.BackgroundTransparency = 1
+                label.Font = Enum.Font.Gotham
+                label.Text = scriptData.title or "Untitled"
+                label.TextColor3 = Color3.fromRGB(220, 220, 230)
+                label.TextSize = 9
+                label.TextXAlignment = Enum.TextXAlignment.Left
+                label.Parent = itemFrame
 
-            local descLbl = Instance.new("TextLabel")
-            descLbl.Size = UDim2.new(1, -120, 0, 14)
-            descLbl.Position = UDim2.new(0, 8, 0, 19)
-            descLbl.BackgroundTransparency = 1
-            descLbl.Font = Enum.Font.Gotham
-            descLbl.Text = hub.desc
-            descLbl.TextColor3 = Color3.fromRGB(150, 150, 165)
-            descLbl.TextSize = 8
-            descLbl.TextXAlignment = Enum.TextXAlignment.Left
-            descLbl.Parent = card
+                local runBtn = Instance.new("TextButton")
+                runBtn.Size = UDim2.new(0, 32, 0, 18)
+                runBtn.Position = UDim2.new(1, -112, 0, 5)
+                runBtn.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
+                runBtn.Font = Enum.Font.GothamMedium
+                runBtn.Text = "Run"
+                runBtn.TextColor3 = Color3.fromRGB(180, 220, 180)
+                runBtn.TextSize = 8
+                runBtn.Parent = itemFrame
 
-            local runHubBtn = Instance.new("TextButton")
-            runHubBtn.Size = UDim2.new(0, 36, 0, 18)
-            runHubBtn.Position = UDim2.new(1, -124, 0, 5)
-            runHubBtn.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
-            runHubBtn.Font = Enum.Font.GothamMedium
-            runHubBtn.Text = "Run"
-            runHubBtn.TextColor3 = Color3.fromRGB(180, 220, 180)
-            runHubBtn.TextSize = 8
-            runHubBtn.Parent = card
+                local runCorner = Instance.new("UICorner")
+                runCorner.CornerRadius = UDim.new(0, 3)
+                runCorner.Parent = runBtn
 
-            local runHubCorner = Instance.new("UICorner")
-            runHubCorner.CornerRadius = UDim.new(0, 3)
-            runHubCorner.Parent = runHubBtn
-
-            runHubBtn.MouseButton1Click:Connect(function()
-                pcall(function()
-                    local fn = (loadstring or load)(hub.code)
-                    if fn then task.spawn(fn) end
+                runBtn.MouseButton1Click:Connect(function()
+                    pcall(function()
+                        local fn = (loadstring or load)(scriptData.script)
+                        if fn then task.spawn(fn) end
+                    end)
+                    ShowNotification("Executed: " .. (scriptData.title or "Script"), Color3.fromRGB(150, 220, 150))
                 end)
-                ShowNotification("Loaded hub: " .. hub.name, Color3.fromRGB(150, 220, 150))
-            end)
 
-            local copyHubBtn = Instance.new("TextButton")
-            copyHubBtn.Size = UDim2.new(0, 36, 0, 18)
-            copyHubBtn.Position = UDim2.new(1, -84, 0, 5)
-            copyHubBtn.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
-            copyHubBtn.Font = Enum.Font.GothamMedium
-            copyHubBtn.Text = "Copy"
-            copyHubBtn.TextColor3 = Color3.fromRGB(180, 200, 255)
-            copyHubBtn.TextSize = 8
-            copyHubBtn.Parent = card
+                local copyBtn = Instance.new("TextButton")
+                copyBtn.Size = UDim2.new(0, 32, 0, 18)
+                copyBtn.Position = UDim2.new(1, -76, 0, 5)
+                copyBtn.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
+                copyBtn.Font = Enum.Font.GothamMedium
+                copyBtn.Text = "Copy"
+                copyBtn.TextColor3 = Color3.fromRGB(180, 200, 255)
+                copyBtn.TextSize = 8
+                copyBtn.Parent = itemFrame
 
-            local copyHubCorner = Instance.new("UICorner")
-            copyHubCorner.CornerRadius = UDim.new(0, 3)
-            copyHubCorner.Parent = copyHubBtn
+                local copyCorner = Instance.new("UICorner")
+                copyCorner.CornerRadius = UDim.new(0, 3)
+                copyCorner.Parent = copyBtn
 
-            copyHubBtn.MouseButton1Click:Connect(function()
-                if setclipboard then
-                    setclipboard(hub.code)
-                    ShowNotification("Copied to clipboard!", Color3.fromRGB(150, 200, 255))
-                else
-                    ShowNotification("Clipboard function unavailable", Color3.fromRGB(220, 100, 100))
-                end
-            end)
+                copyBtn.MouseButton1Click:Connect(function()
+                    if setclipboard then
+                        setclipboard(scriptData.script)
+                        ShowNotification("Copied script to clipboard!", Color3.fromRGB(150, 200, 255))
+                    else
+                        ShowNotification("Clipboard function unavailable", Color3.fromRGB(220, 100, 100))
+                    end
+                end)
+
+                local saveBtn = Instance.new("TextButton")
+                saveBtn.Size = UDim2.new(0, 36, 0, 18)
+                saveBtn.Position = UDim2.new(1, -40, 0, 5)
+                saveBtn.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
+                saveBtn.Font = Enum.Font.GothamMedium
+                saveBtn.Text = "Save"
+                saveBtn.TextColor3 = Color3.fromRGB(200, 200, 215)
+                saveBtn.TextSize = 8
+                saveBtn.Parent = itemFrame
+
+                local saveCorner = Instance.new("UICorner")
+                saveCorner.CornerRadius = UDim.new(0, 3)
+                saveCorner.Parent = saveBtn
+
+                saveBtn.MouseButton1Click:Connect(function()
+                    table.insert(SavedScriptsList, {name = scriptData.title or "Untitled", code = scriptData.script, locked = false})
+                    SaveConfigsToFile()
+                    RefreshSavedScripts()
+                    ShowNotification("added script to saved", Color3.fromRGB(150, 200, 255))
+                end)
+            end
+            SearchScroll.CanvasSize = UDim2.new(0, 0, 0, SearchScrollLayout.AbsoluteContentSize.Y)
+            ShowNotification("Search loaded successfully!", Color3.fromRGB(150, 220, 150))
+        else
+            ShowNotification("Failed to fetch from ScriptBlox.", Color3.fromRGB(220, 100, 100))
         end
-    end
-    HubScroll.CanvasSize = UDim2.new(0, 0, 0, HubLayout.AbsoluteContentSize.Y)
-end
-
-SearchInput:GetPropertyChangedSignal("Text"):Connect(function()
-    RenderHubList(SearchInput.Text)
+    end)
 end)
 
-RenderHubList()
-
--- MISC PANEL (UTILITIES)
+-- MISC PANEL
 local MiscScroll = Instance.new("ScrollingFrame")
 MiscScroll.Size = UDim2.new(1, 0, 1, 0)
 MiscScroll.BackgroundTransparency = 1
@@ -753,9 +779,9 @@ MiscLayout.Parent = MiscScroll
 
 local function CreateMiscButton(name, callback)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, 0, 0, 28)
+    btn.Size = UDim2.new(1, 0, 0, 26)
     btn.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
-    btn.Font = Enum.Font.GothamMedium
+    btn.Font = Enum.Font.Gotham
     btn.Text = name
     btn.TextColor3 = Color3.fromRGB(220, 220, 230)
     btn.TextSize = 9
@@ -769,48 +795,136 @@ local function CreateMiscButton(name, callback)
 end
 
 CreateMiscButton("Rejoin Server", function()
-    ShowNotification("Rejoining server...", Color3.fromRGB(255, 200, 150))
+    ShowNotification("Rejoining server...", Color3.fromRGB(220, 220, 150))
     TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
 end)
 
 CreateMiscButton("Server Hop", function()
-    ShowNotification("Finding new server...", Color3.fromRGB(150, 200, 255))
-    local servers = {}
-    local success, page = pcall(function()
-        return HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"))
-    end)
-    if success and page and page.data then
-        for _, s in ipairs(page.data) do
-            if type(s) == "table" and s.maxPlayers and s.playing and s.playing < s.maxPlayers and s.id ~= game.JobId then
-                table.insert(servers, s.id)
+    ShowNotification("Searching for a new server...", Color3.fromRGB(220, 220, 150))
+    task.spawn(function()
+        local success, servers = pcall(function()
+            local req = request or syn.request or http_request
+            if not req then return end
+            local res = req({
+                Url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100",
+                Method = "GET"
+            })
+            if res and res.Body then
+                return HttpService:JSONDecode(res.Body)
+            end
+        end)
+        if success and servers and servers.data then
+            for _, s in ipairs(servers.data) do
+                if type(s) == "table" and s.id ~= game.JobId and s.playing < s.maxPlayers then
+                    TeleportService:TeleportToPlaceInstance(game.PlaceId, s.id, LocalPlayer)
+                    break
+                end
             end
         end
-        if #servers > 0 then
-            TeleportService:TeleportToPlaceInstance(game.PlaceId, servers[math.random(1, #servers)], LocalPlayer)
+    end)
+end)
+
+CreateMiscButton("Small Server Join", function()
+    ShowNotification("Finding a small server...", Color3.fromRGB(220, 220, 150))
+    task.spawn(function()
+        local success, servers = pcall(function()
+            local req = request or syn.request or http_request
+            if not req then return end
+            local res = req({
+                Url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100",
+                Method = "GET"
+            })
+            if res and res.Body then
+                return HttpService:JSONDecode(res.Body)
+            end
+        end)
+        if success and servers and servers.data then
+            local smallestServer = nil
+            local minPlayers = math.huge
+            for _, s in ipairs(servers.data) do
+                if type(s) == "table" and s.id ~= game.JobId and s.playing < s.maxPlayers and s.playing < minPlayers then
+                    minPlayers = s.playing
+                    smallestServer = s
+                end
+            end
+            if smallestServer then
+                TeleportService:TeleportToPlaceInstance(game.PlaceId, smallestServer.id, LocalPlayer)
+            end
+        end
+    end)
+end)
+
+local antiAfkConnection = nil
+local isAntiAfkEnabled = false
+
+local function CreateMiscToggle(name, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, 0, 0, 26)
+    btn.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+    btn.Font = Enum.Font.Gotham
+    btn.Text = name .. ": Off"
+    btn.TextColor3 = Color3.fromRGB(220, 160, 160)
+    btn.TextSize = 9
+    btn.Parent = MiscScroll
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 4)
+    corner.Parent = btn
+
+    btn.MouseButton1Click:Connect(function()
+        isAntiAfkEnabled = not isAntiAfkEnabled
+        if isAntiAfkEnabled then
+            btn.Text = name .. ": On"
+            btn.TextColor3 = Color3.fromRGB(180, 220, 180)
+            ShowNotification("Anti AFK Enabled", Color3.fromRGB(150, 220, 150))
         else
-            ShowNotification("No available servers found!", Color3.fromRGB(250, 100, 100))
+            btn.Text = name .. ": Off"
+            btn.TextColor3 = Color3.fromRGB(220, 160, 160)
+            ShowNotification("Anti AFK Disabled", Color3.fromRGB(220, 160, 160))
+        end
+        callback(isAntiAfkEnabled, btn)
+    end)
+end
+
+CreateMiscToggle("Anti AFK", function(state, btn)
+    if state then
+        antiAfkConnection = LocalPlayer.Idled:Connect(function()
+            VirtualUser:CaptureController()
+            VirtualUser:ClickButton2(Vector2.new())
+        end)
+    else
+        if antiAfkConnection then
+            antiAfkConnection:Disconnect()
+            antiAfkConnection = nil
         end
     end
 end)
 
-CreateMiscButton("Anti-Afk (Prevent Kick)", function()
-    local vu = game:GetService("VirtualUser")
-    LocalPlayer.Idled:Connect(function()
-        vu:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-        task.wait(1)
-        vu:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-    end)
-    ShowNotification("Anti-AFK Enabled!", Color3.fromRGB(150, 220, 150))
+CreateMiscButton("Copy Job ID", function()
+    if setclipboard then 
+        setclipboard(game.JobId)
+        ShowNotification("Job ID copied to clipboard!", Color3.fromRGB(150, 200, 255))
+    end
 end)
 
-CreateMiscButton("Fullbright", function()
-    pcall(function()
-        game.Lighting.Brightness = 2
-        game.Lighting.ClockTime = 14
-        game.Lighting.FogEnd = 100000
-        game.Lighting.GlobalShadows = false
-    end)
-    ShowNotification("Fullbright Applied!", Color3.fromRGB(250, 250, 150))
+local JobIdBox = Instance.new("TextBox")
+JobIdBox.Size = UDim2.new(1, 0, 0, 26)
+JobIdBox.BackgroundColor3 = Color3.fromRGB(12, 12, 15)
+JobIdBox.Font = Enum.Font.Gotham
+JobIdBox.PlaceholderText = "Paste Job ID and press Enter..."
+JobIdBox.Text = ""
+JobIdBox.TextColor3 = Color3.fromRGB(240, 240, 245)
+JobIdBox.TextSize = 9
+JobIdBox.Parent = MiscScroll
+
+JobIdBox.FocusLost:Connect(function(enterPressed)
+    if enterPressed and JobIdBox.Text ~= "" then
+        ShowNotification("Teleporting to Job ID...", Color3.fromRGB(220, 220, 150))
+        pcall(function()
+            TeleportService:TeleportToPlaceInstance(game.PlaceId, JobIdBox.Text, LocalPlayer)
+        end)
+    end
 end)
 
 MiscScroll.CanvasSize = UDim2.new(0, 0, 0, MiscLayout.AbsoluteContentSize.Y)
+
