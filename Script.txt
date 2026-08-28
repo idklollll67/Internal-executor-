@@ -1,4 +1,4 @@
--- BSH Hub (Delta-Style Right-Sided Layout & Ultimate Performance Core)
+-- BSH Hub (Delta-Style Right-Sided Layout & AI Assistant Module)
 
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
@@ -121,7 +121,7 @@ OpenCloseGradient.Color = ColorSequence.new({
 OpenCloseGradient.Rotation = 45
 OpenCloseGradient.Parent = OpenCloseBtn
 
--- MAIN HUB CONTAINER (MODIFIED FOR DELTA-STYLE LAYOUT)
+-- MAIN HUB CONTAINER
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 520, 0, 320)
@@ -233,7 +233,7 @@ NavLayout.VerticalAlignment = Enum.VerticalAlignment.Top
 NavLayout.Padding = UDim.new(0, 6)
 NavLayout.Parent = NavContainer
 
--- CONTENT CONTAINER (SHIFTED LEFT TO ACCOMMODATE RIGHT NAV)
+-- CONTENT CONTAINER
 local ContentContainer = Instance.new("Frame")
 ContentContainer.Size = UDim2.new(1, -136, 1, -52)
 ContentContainer.Position = UDim2.new(0, 14, 0, 44)
@@ -253,17 +253,18 @@ local SavedPanel = CreatePanel()
 local ExecPanel = CreatePanel()
 local SearchPanel = CreatePanel()
 local MiscPanel = CreatePanel()
+local AiPanel = CreatePanel()
 local AdminPanel = CreatePanel()
 
 SavedPanel.Visible = true
 
-local function CreateNavButton(name, panel, isSpecial)
+local function CreateNavButton(name, panel, isSpecial, isAI)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1, -4, 0, 32)
-    btn.BackgroundColor3 = isSpecial and Color3.fromRGB(48, 20, 20) or Color3.fromRGB(22, 19, 30)
+    btn.BackgroundColor3 = isSpecial and Color3.fromRGB(48, 20, 20) or (isAI and Color3.fromRGB(20, 30, 48) or Color3.fromRGB(22, 19, 30))
     btn.Font = Enum.Font.GothamBold
     btn.Text = name
-    btn.TextColor3 = isSpecial and Color3.fromRGB(255, 130, 130) or Color3.fromRGB(170, 160, 195)
+    btn.TextColor3 = isSpecial and Color3.fromRGB(255, 130, 130) or (isAI and Color3.fromRGB(150, 200, 255) or Color3.fromRGB(170, 160, 195))
     btn.TextSize = 9
     btn.Parent = NavContainer
 
@@ -272,7 +273,7 @@ local function CreateNavButton(name, panel, isSpecial)
     corner.Parent = btn
 
     local stroke = Instance.new("UIStroke")
-    stroke.Color = isSpecial and Color3.fromRGB(90, 35, 35) or Color3.fromRGB(50, 40, 75)
+    stroke.Color = isSpecial and Color3.fromRGB(90, 35, 35) or (isAI and Color3.fromRGB(45, 75, 115) or Color3.fromRGB(50, 40, 75))
     stroke.Parent = btn
 
     btn.MouseButton1Click:Connect(function()
@@ -280,18 +281,20 @@ local function CreateNavButton(name, panel, isSpecial)
         ExecPanel.Visible = false
         SearchPanel.Visible = false
         MiscPanel.Visible = false
+        AiPanel.Visible = false
         if AdminPanel then AdminPanel.Visible = false end
         panel.Visible = true
     end)
 end
 
-CreateNavButton("SAVED", SavedPanel, false)
-CreateNavButton("EXEC", ExecPanel, false)
-CreateNavButton("SEARCH", SearchPanel, false)
-CreateNavButton("MISC", MiscPanel, false)
+CreateNavButton("SAVED", SavedPanel, false, false)
+CreateNavButton("EXEC", ExecPanel, false, false)
+CreateNavButton("SEARCH", SearchPanel, false, false)
+CreateNavButton("MISC", MiscPanel, false, false)
+CreateNavButton("AI CHAT", AiPanel, false, true)
 
 if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
-    CreateNavButton("ADMIN", AdminPanel, true)
+    CreateNavButton("ADMIN", AdminPanel, true, false)
 end
 
 NavContainer.CanvasSize = UDim2.new(0, 0, 0, NavLayout.AbsoluteContentSize.Y + 10)
@@ -647,6 +650,126 @@ end)
 
 RefreshSavedScripts()
 
+-- AI CHATBOT PANEL
+local AiChatScroll = Instance.new("ScrollingFrame")
+AiChatScroll.Size = UDim2.new(1, 0, 1, -40)
+AiChatScroll.Position = UDim2.new(0, 0, 0, 0)
+AiChatScroll.BackgroundTransparency = 1
+AiChatScroll.ScrollBarThickness = 3
+AiChatScroll.ScrollBarImageColor3 = Color3.fromRGB(90, 70, 140)
+AiChatScroll.Parent = AiPanel
+
+local AiChatLayout = Instance.new("UIListLayout")
+AiChatLayout.Padding = UDim.new(0, 6)
+AiChatLayout.Parent = AiChatScroll
+
+local AiInputBox = Instance.new("TextBox")
+AiInputBox.Size = UDim2.new(1, -65, 0, 32)
+AiInputBox.Position = UDim2.new(0, 0, 1, -34)
+AiInputBox.BackgroundColor3 = Color3.fromRGB(10, 9, 14)
+AiInputBox.Font = Enum.Font.GothamMedium
+AiInputBox.PlaceholderText = "Ask AI assistant anything..."
+AiInputBox.Text = ""
+AiInputBox.TextColor3 = Color3.fromRGB(240, 235, 250)
+AiInputBox.PlaceholderColor3 = Color3.fromRGB(80, 70, 105)
+AiInputBox.TextSize = 9
+AiInputBox.TextXAlignment = Enum.TextXAlignment.Left
+AiInputBox.Parent = AiPanel
+
+local AiInputCorner = Instance.new("UICorner")
+AiInputCorner.CornerRadius = UDim.new(0, 8)
+AiInputCorner.Parent = AiInputBox
+
+local AiSendBtn = Instance.new("TextButton")
+AiSendBtn.Size = UDim2.new(0, 58, 0, 32)
+AiSendBtn.Position = UDim2.new(1, -58, 1, -34)
+AiSendBtn.BackgroundColor3 = Color3.fromRGB(20, 32, 55)
+AiSendBtn.Font = Enum.Font.GothamBold
+AiSendBtn.Text = "Send"
+AiSendBtn.TextColor3 = Color3.fromRGB(150, 200, 255)
+AiSendBtn.TextSize = 9
+AiSendBtn.Parent = AiPanel
+
+local AiSendCorner = Instance.new("UICorner")
+AiSendCorner.CornerRadius = UDim.new(0, 8)
+AiSendCorner.Parent = AiSendBtn
+
+local function AppendChatMessage(sender, text, isUser)
+    local msgFrame = Instance.new("Frame")
+    msgFrame.Size = UDim2.new(1, 0, 0, 0)
+    msgFrame.BackgroundTransparency = 1
+    msgFrame.Parent = AiChatScroll
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -12, 0, 0)
+    label.Position = UDim2.new(0, 6, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Font = Enum.Font.GothamMedium
+    label.Text = sender .. ": " .. text
+    label.TextColor3 = isUser and Color3.fromRGB(200, 220, 255) or Color3.fromRGB(230, 220, 250)
+    label.TextSize = 9
+    label.TextWrapped = true
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = msgFrame
+
+    task.spawn(function()
+        task.wait()
+        label.Size = UDim2.new(1, -12, 0, label.TextBounds.Y + 6)
+        msgFrame.Size = UDim2.new(1, 0, 0, label.TextBounds.Y + 10)
+        AiChatScroll.CanvasSize = UDim2.new(0, 0, 0, AiChatLayout.AbsoluteContentSize.Y)
+        AiChatScroll.CanvasPosition = Vector2.new(0, AiChatScroll.CanvasSize.Y.Offset)
+    end)
+end
+
+AppendChatMessage("System", "AI Chat ready! Powered by openai/gpt-oss-20b.", false)
+
+AiSendBtn.MouseButton1Click:Connect(function()
+    local text = AiInputBox.Text
+    if text == "" then return end
+    AiInputBox.Text = ""
+    AppendChatMessage("You", text, true)
+    
+    task.spawn(function()
+        local ok, res = pcall(function()
+            local req = request or syn.request or http_request
+            if not req then return nil end
+            
+            local payload = {
+                model = "openai/gpt-oss-20b",
+                messages = {
+                    {role = "system", content = "You are a helpful general-purpose AI assistant inside a Roblox UI tool. Answer user questions clearly and concisely."},
+                    {role = "user", content = text}
+                },
+                temperature = 0.7
+            }
+            
+            local response = req({
+                Url = "https://api.groq.com/openai/v1/chat/completions",
+                Method = "POST",
+                Headers = {
+                    ["Content-Type"] = "application/json",
+                    ["Authorization"] = "Bearer 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"
+                },
+                Body = HttpService:JSONEncode(payload)
+            })
+            
+            if response and response.Body then
+                return HttpService:JSONDecode(response.Body)
+            end
+        end)
+        
+        if ok and res and res.choices and res.choices[1] and res.choices[1].message then
+            local reply = res.choices[1].message.content
+            AppendChatMessage("AI", reply, false)
+        else
+            AppendChatMessage("AI", "Error fetching response or invalid API response.", false)
+        end
+    end)
+end)
+
+-- AI PANEL
+-- (Integrated directly via AiChatScroll, AiInputBox, and AiSendBtn above)
+
 -- ADMIN PANEL
 if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
     local AdminTitle = Instance.new("TextLabel")
@@ -961,7 +1084,6 @@ CreateMiscToggle("Anti AFK Guard", function(state)
     end
 end)
 
--- ULTIMATE CRAZY FPS BOOST BUTTON
 CreateMiscButton("Crazy FPS Boost (Ultra Optimization)", function()
     ShowNotification("Executing Maximum FPS Optimization...", Color3.fromRGB(150, 230, 150))
     pcall(function()
