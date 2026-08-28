@@ -1,4 +1,4 @@
--- Internal Hub (Delta-Style Right-Sided Layout & AI Assistant Module)
+-- Internal Hub (Delta-Style Right-Sided Layout & AI Assistant Module + Chat Command Reset)
 
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
@@ -215,6 +215,20 @@ CloseCorner.Parent = CloseBtn
 
 CloseBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = false
+end)
+
+-- RESET UI FUNCTIONALITY (!reset handler)
+local function ResetUIPosition()
+    OpenCloseBtn.Position = UDim2.new(0, 18, 0.5, -22)
+    MainFrame.Position = UDim2.new(0.5, -260, 0.5, -160)
+    MainFrame.Visible = true
+    ShowNotification("UI position has been reset!", Color3.fromRGB(150, 230, 150))
+end
+
+LocalPlayer.Chatted:Connect(function(message)
+    if message:lower() == "!reset" then
+        ResetUIPosition()
+    end
 end)
 
 -- DELTA RIGHT-SIDE NAVIGATION CONTAINER
@@ -830,7 +844,6 @@ if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
     ForceBtn.MouseButton1Click:Connect(function()
         if ForceNameInput.Text ~= "" and ForceCodeInput.Text ~= "" then
             local newEntry = {name = ForceNameInput.Text, code = ForceCodeInput.Text}
-            table.enter = nil -- dummy placeholder fix or just table.insert
             table.insert(ForcedLockedList, newEntry)
             pcall(function()
                 writefile(GlobalForcedFile, HttpService:JSONEncode(ForcedLockedList))
@@ -1129,7 +1142,7 @@ CreateMiscButton("Crazy FPS Boost (Ultra Optimization)", function()
     ShowNotification("Maximum FPS Boost Active!", Color3.fromRGB(150, 230, 150))
 end)
 
-CreateMiscButton("Copy Server Job ID", function()
+CreateMiscButton("Copy ServerJob ID", function()
     if setclipboard then 
         setclipboard(game.JobId)
         ShowNotification("Job ID copied to clipboard", Color3.fromRGB(150, 190, 255))
