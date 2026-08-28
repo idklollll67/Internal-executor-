@@ -1,4 +1,4 @@
--- Internal Hub (Fixed Color Contrast, Added User Profile, Cleaned Topbar)
+-- Internal Hub (Fixed Color Contrast, Compact User Profile, Cleaned Topbar)
 
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
@@ -274,9 +274,9 @@ LocalPlayer.Chatted:Connect(function(message)
     end
 end)
 
--- LEFT-SIDE NAVIGATION CONTAINER
+-- LEFT-SIDE NAVIGATION CONTAINER (adjusted height to accommodate smaller profile block)
 local NavContainer = Instance.new("ScrollingFrame")
-NavContainer.Size = UDim2.new(0, 96, 1, -120)
+NavContainer.Size = UDim2.new(0, 96, 1, -96)
 NavContainer.Position = UDim2.new(0, 0, 0, 45)
 NavContainer.BackgroundColor3 = Theme.Sidebar
 NavContainer.BorderSizePixel = 0
@@ -290,10 +290,10 @@ NavLayout.VerticalAlignment = Enum.VerticalAlignment.Top
 NavLayout.Padding = UDim.new(0, 6)
 NavLayout.Parent = NavContainer
 
--- USER PROFILE SECTION (Pinned at bottom of sidebar showing avatar & name)
+-- COMPACT USER PROFILE SECTION (Pinned at bottom of sidebar showing avatar & name)
 local UserProfileFrame = Instance.new("Frame")
-UserProfileFrame.Size = UDim2.new(0, 84, 0, 68)
-UserProfileFrame.Position = UDim2.new(0, 6, 1, -73)
+UserProfileFrame.Size = UDim2.new(0, 84, 0, 44)
+UserProfileFrame.Position = UDim2.new(0, 6, 1, -49)
 UserProfileFrame.BackgroundColor3 = Theme.Element
 UserProfileFrame.Parent = MainFrame
 
@@ -306,8 +306,8 @@ UserProfileStroke.Color = Theme.Border
 UserProfileStroke.Parent = UserProfileFrame
 
 local AvatarThumb = Instance.new("ImageLabel")
-AvatarThumb.Size = UDim2.new(0, 32, 0, 32)
-AvatarThumb.Position = UDim2.new(0.5, -16, 0, 6)
+AvatarThumb.Size = UDim2.new(0, 24, 0, 24)
+AvatarThumb.Position = UDim2.new(0, 6, 0.5, -12)
 AvatarThumb.BackgroundTransparency = 1
 AvatarThumb.Image = Players:GetUserThumbnailAsync(LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
 AvatarThumb.Parent = UserProfileFrame
@@ -317,15 +317,15 @@ AvatarCorner.CornerRadius = UDim.new(1, 0)
 AvatarCorner.Parent = AvatarThumb
 
 local UserNameLabel = Instance.new("TextLabel")
-UserNameLabel.Size = UDim2.new(1, -6, 0, 20)
-UserNameLabel.Position = UDim2.new(0, 3, 0, 42)
+UserNameLabel.Size = UDim2.new(1, -36, 1, 0)
+UserNameLabel.Position = UDim2.new(0, 32, 0, 0)
 UserNameLabel.BackgroundTransparency = 1
 UserNameLabel.Font = Enum.Font.GothamBold
 UserNameLabel.Text = LocalPlayer.Name
 UserNameLabel.TextColor3 = Theme.Text
 UserNameLabel.TextSize = 8
 UserNameLabel.TextTruncate = Enum.TextTruncate.AtEnd
-UserNameLabel.TextXAlignment = Enum.TextXAlignment.Center
+UserNameLabel.TextXAlignment = Enum.TextXAlignment.Left
 UserNameLabel.Parent = UserProfileFrame
 
 -- CONTENT CONTAINER (Fixed sizing and positioning to prevent overlap with Sidebar)
@@ -1464,7 +1464,7 @@ JoinJobBtnCorner.Parent = JoinJobBtn
 
 local JoinJobBtnStroke = Instance.new("UIStroke")
 JoinJobBtnStroke.Color = Theme.Border
-JoinJobBtnStroke.Parent = JoinJobBtn
+JoinJobBtnStroke.Parent = JoinJobFrame
 
 JoinJobBtn.MouseButton1Click:Connect(function()
     local jobIdText = JobInputBox.Text
