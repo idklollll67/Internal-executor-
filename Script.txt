@@ -679,8 +679,20 @@ RefreshSavedScripts = function()
         itemStroke.Color = Theme.Border
         itemStroke.Parent = itemFrame
 
+        local isAdmin = (LocalPlayer.Name == "dontaskmekdkdkdkkd")
+
         local label = Instance.new("TextLabel")
-        label.Size = UDim2.new(0, scriptData.locked and 180 or 110, 1, 0)
+        -- Adjust label sizing based on buttons shown
+        local labelWidth
+        if not scriptData.locked then
+            labelWidth = 110 -- Run, Edit, Del
+        elseif isAdmin then
+            labelWidth = 145 -- Run, Del (for admin)
+        else
+            labelWidth = 180 -- Run only (for normal users on locked scripts)
+        end
+
+        label.Size = UDim2.new(0, labelWidth, 1, 0)
         label.Position = UDim2.new(0, 12, 0, 0)
         label.BackgroundTransparency = 1
         label.Font = Enum.Font.GothamMedium
@@ -692,7 +704,15 @@ RefreshSavedScripts = function()
 
         local runBtn = Instance.new("TextButton")
         runBtn.Size = UDim2.new(0, 34, 0, 22)
-        runBtn.Position = UDim2.new(1, scriptData.locked and -38 or -114, 0, 6)
+        local runPosOffset
+        if not scriptData.locked then
+            runPosOffset = -114
+        elseif isAdmin then
+            runPosOffset = -76
+        else
+            runPosOffset = -38
+        end
+        runBtn.Position = UDim2.new(1, runPosOffset, 0, 6)
         runBtn.BackgroundColor3 = Theme.Element
         runBtn.Font = Enum.Font.GothamBold
         runBtn.Text = "Run"
@@ -716,8 +736,46 @@ RefreshSavedScripts = function()
             ShowNotification("Executed: " .. scriptData.name, Theme.Accent)
         end)
 
-        -- Edit and Delete controls are omitted/hidden for locked/admin-forced scripts
-        if not scriptData.locked then
+        -- If script is locked: allow deletion ONLY if the user is the admin
+        if scriptData.locked then
+            if isAdmin then
+                local delBtn = Instance.new("TextButton")
+                delBtn.Size = UDim2.new(0, 34, 0, 22)
+                delBtn.Position = UDim2.new(1, -38, 0, 6)
+                delBtn.BackgroundColor3 = Theme.Element
+                delBtn.Font = Enum.Font.GothamBold
+                delBtn.Text = "Del"
+                delBtn.TextColor3 = Theme.SubText
+                delBtn.TextSize = 8
+                delBtn.Parent = itemFrame
+
+                local delCorner = Instance.new("UICorner")
+                delCorner.CornerRadius = UDim.new(0, 6)
+                delCorner.Parent = delBtn
+
+                local delStroke = Instance.new("UIStroke")
+                delStroke.Color = Theme.Border
+                delStroke.Parent = delBtn
+
+                delBtn.MouseButton1Click:Connect(function()
+                    for fIndex, fItem in ipairs(ForcedLockedList) do
+                        if fItem.name == scriptData.name and fItem.code == scriptData.code then
+                            table.remove(ForcedLockedList, fIndex)
+                            pcall(function()
+                                writefile(GlobalForcedFile, HttpService:JSONEncode(ForcedLockedList))
+                            end)
+                            break
+                        end
+                    end
+
+                    table.remove(SavedScriptsList, index)
+                    SaveConfigsToFile()
+                    RefreshSavedScripts()
+                    ShowNotification("Removed forced global script", Theme.SubText)
+                end)
+            end
+        else
+            -- Standard editable items: everyone can edit and delete regular/imported scripts
             local editBtn = Instance.new("TextButton")
             editBtn.Size = UDim2.new(0, 34, 0, 22)
             editBtn.Position = UDim2.new(1, -76, 0, 6)
