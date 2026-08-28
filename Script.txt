@@ -1,4 +1,4 @@
--- Internal Hub (Delta-Style Right-Sided Layout & AI Assistant Module + Chat Command Reset)
+-- Internal Hub (Delta-Style Right-Sided Layout & AI Assistant Module + Chat Command Reset/Lock)
 
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
@@ -134,13 +134,19 @@ local MainStroke = Instance.new("UIStroke")
 MainStroke.Color = Color3.fromRGB(45, 35, 65)
 MainStroke.Parent = MainFrame
 
+-- UI Lock State Variable
+local isUiLocked = false
+
 OpenCloseBtn.MouseButton1Click:Connect(function()
-    MainFrame.Visible = not MainFrame.Visible
+    if not isUiLocked then
+        MainFrame.Visible = not MainFrame.Visible
+    end
 end)
 
 -- Draggable Toggle Interaction
 local dragging, dragInput, dragStart, startPos
 OpenCloseBtn.InputBegan:Connect(function(input)
+    if isUiLocked then return end
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         dragging = true
         dragStart = input.Position
@@ -154,12 +160,14 @@ OpenCloseBtn.InputBegan:Connect(function(input)
 end)
 
 OpenCloseBtn.InputChanged:Connect(function(input)
+    if isUiLocked then return end
     if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
         dragInput = input
     end
 end)
 
 UserInputService.InputChanged:Connect(function(input)
+    if isUiLocked then return end
     if input == dragInput and dragging then
         local delta = input.Position - dragStart
         OpenCloseBtn.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
@@ -217,7 +225,7 @@ CloseBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = false
 end)
 
--- RESET UI FUNCTIONALITY (!reset handler)
+-- RESET & LOCK/UNLOCK UI FUNCTIONALITY COMMANDS
 local function ResetUIPosition()
     OpenCloseBtn.Position = UDim2.new(0, 18, 0.5, -22)
     MainFrame.Position = UDim2.new(0.5, -260, 0.5, -160)
@@ -226,8 +234,15 @@ local function ResetUIPosition()
 end
 
 LocalPlayer.Chatted:Connect(function(message)
-    if message:lower() == "!reset" then
+    local msg = message:lower()
+    if msg == "!reset" then
         ResetUIPosition()
+    elseif msg == "!lock" then
+        isUiLocked = true
+        ShowNotification("UI Toggle has been locked!", Color3.fromRGB(240, 140, 140))
+    elseif msg == "!unlock" then
+        isUiLocked = false
+        ShowNotification("UI Toggle has been unlocked!", Color3.fromRGB(150, 230, 150))
     end
 end)
 
