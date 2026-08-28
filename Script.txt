@@ -178,7 +178,7 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
--- TOPBAR TITLE / CLOSE & TOP BUTTONS (Config style header icons)
+-- TOPBAR TITLE / CLOSE & TOP BUTTONS
 local TopBar = Instance.new("Frame")
 TopBar.Size = UDim2.new(1, 0, 0, 42)
 TopBar.BackgroundColor3 = Color3.fromRGB(16, 14, 22)
@@ -207,7 +207,7 @@ HubTitle.TextSize = 10
 HubTitle.TextXAlignment = Enum.TextXAlignment.Left
 HubTitle.Parent = TopBar
 
--- Top Action Icons / Buttons (Discord / Script / Settings style elements matching reference layout)
+-- Top Action Icons / Buttons
 local TopActionContainer = Instance.new("Frame")
 TopActionContainer.Size = UDim2.new(0, 120, 1, 0)
 TopActionContainer.Position = UDim2.new(1, -130, 0, 0)
@@ -255,7 +255,7 @@ CreateTopIconButton("</>", function()
     ShowNotification("Source Code Toggle", Color3.fromRGB(150, 230, 150))
 end)
 
--- CHAT COMMANDS FUNCTIONALITY (!tpto, !reset, !lock, !unlock, !fix) with Partial Matching
+-- CHAT COMMANDS FUNCTIONALITY (!tpto, !reset, !lock, !unlock, !fix)
 LocalPlayer.Chatted:Connect(function(message)
     local args = {}
     for word in message:gmatch("%S+") do
@@ -321,9 +321,9 @@ LocalPlayer.Chatted:Connect(function(message)
     end
 end)
 
--- LEFT-SIDE NAVIGATION CONTAINER (Matching the screenshot's left vertical bar style)
+-- LEFT-SIDE NAVIGATION CONTAINER WITH TEXT-BASED LABELS
 local NavContainer = Instance.new("ScrollingFrame")
-NavContainer.Size = UDim2.new(0, 52, 1, -42)
+NavContainer.Size = UDim2.new(0, 84, 1, -42)
 NavContainer.Position = UDim2.new(0, 0, 0, 42)
 NavContainer.BackgroundTransparency = 1
 NavContainer.ScrollBarThickness = 0
@@ -333,13 +333,13 @@ local NavLayout = Instance.new("UIListLayout")
 NavLayout.FillDirection = Enum.FillDirection.Vertical
 NavLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 NavLayout.VerticalAlignment = Enum.VerticalAlignment.Top
-NavLayout.Padding = UDim.new(0, 8)
+NavLayout.Padding = UDim.new(0, 6)
 NavLayout.Parent = NavContainer
 
--- CONTENT CONTAINER (Offset to make room for the left sidebar)
+-- CONTENT CONTAINER
 local ContentContainer = Instance.new("Frame")
-ContentContainer.Size = UDim2.new(1, -62, 1, -52)
-ContentContainer.Position = UDim2.new(0, 58, 0, 48)
+ContentContainer.Size = UDim2.new(1, -94, 1, -52)
+ContentContainer.Position = UDim2.new(0, 90, 0, 48)
 ContentContainer.BackgroundTransparency = 1
 ContentContainer.Parent = MainFrame
 
@@ -362,18 +362,18 @@ local AdminPanel = CreatePanel()
 
 SavedPanel.Visible = true
 
-local function CreateNavButton(iconText, panel, isSpecial, isAI)
+local function CreateNavButton(nameText, panel, isSpecial, isAI)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 36, 0, 36)
+    btn.Size = UDim2.new(0, 72, 0, 28)
     btn.BackgroundColor3 = isSpecial and Color3.fromRGB(48, 20, 20) or (isAI and Color3.fromRGB(20, 30, 48) or Color3.fromRGB(22, 19, 30))
     btn.Font = Enum.Font.GothamBold
-    btn.Text = iconText
+    btn.Text = nameText
     btn.TextColor3 = isSpecial and Color3.fromRGB(255, 130, 130) or (isAI and Color3.fromRGB(150, 200, 255) or Color3.fromRGB(170, 160, 195))
-    btn.TextSize = 12
+    btn.TextSize = 8
     btn.Parent = NavContainer
 
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 10)
+    corner.CornerRadius = UDim.new(0, 6)
     corner.Parent = btn
 
     local stroke = Instance.new("UIStroke")
@@ -392,16 +392,15 @@ local function CreateNavButton(iconText, panel, isSpecial, isAI)
     end)
 end
 
--- Icons for the left sidebar buttons matching common layout conventions
-CreateNavButton("💾", SavedPanel, false, false)
-CreateNavButton("⚡", ExecPanel, false, false)
-CreateNavButton("🔍", SearchPanel, false, false)
-CreateNavButton("🛠", MiscPanel, false, false)
-CreateNavButton("🤖", AiPanel, false, true)
-CreateNavButton("📋", CommandsPanel, false, false)
+CreateNavButton("Saved", SavedPanel, false, false)
+CreateNavButton("Executor", ExecPanel, false, false)
+CreateNavButton("Search", SearchPanel, false, false)
+CreateNavButton("Misc", MiscPanel, false, false)
+CreateNavButton("AI Chat", AiPanel, false, true)
+CreateNavButton("Commands", CommandsPanel, false, false)
 
 if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
-    CreateNavButton("👑", AdminPanel, true, false)
+    CreateNavButton("Admin", AdminPanel, true, false)
 end
 
 NavContainer.CanvasSize = UDim2.new(0, 0, 0, NavLayout.AbsoluteContentSize.Y + 10)
@@ -757,7 +756,7 @@ end)
 
 RefreshSavedScripts()
 
--- AI CHATBOT PANEL (AI MENU)
+-- AI CHATBOT PANEL
 local AiChatScroll = Instance.new("ScrollingFrame")
 AiChatScroll.Size = UDim2.new(1, 0, 1, -40)
 AiChatScroll.Position = UDim2.new(0, 0, 0, 0)
@@ -1319,6 +1318,59 @@ CreateMiscButton("Copy ServerJob ID", function()
     if setclipboard then 
         setclipboard(game.JobId)
         ShowNotification("Job ID copied to clipboard", Color3.fromRGB(150, 190, 255))
+    end
+end)
+
+-- JOIN SERVER BY JOB ID UI COMPONENT (Click to join feature)
+local JoinJobFrame = Instance.new("Frame")
+JoinJobFrame.Size = UDim2.new(1, 0, 0, 68)
+JoinJobFrame.BackgroundColor3 = Color3.fromRGB(16, 14, 22)
+JoinJobFrame.Parent = MiscScroll
+
+local JoinJobCorner = Instance.new("UICorner")
+JoinJobCorner.CornerRadius = UDim.new(0, 8)
+JoinJobCorner.Parent = JoinJobFrame
+
+local JobInputBox = Instance.new("TextBox")
+JobInputBox.Size = UDim2.new(1, -16, 0, 26)
+JobInputBox.Position = UDim2.new(0, 8, 0, 6)
+JobInputBox.BackgroundColor3 = Color3.fromRGB(10, 9, 14)
+JobInputBox.Font = Enum.Font.GothamMedium
+JobInputBox.PlaceholderText = "Paste Job ID here..."
+JobInputBox.Text = ""
+JobInputBox.TextColor3 = Color3.fromRGB(240, 235, 250)
+JobInputBox.PlaceholderColor3 = Color3.fromRGB(80, 70, 105)
+JobInputBox.TextSize = 8
+JobInputBox.TextXAlignment = Enum.TextXAlignment.Left
+JobInputBox.Parent = JoinJobFrame
+
+local JobInputCorner = Instance.new("UICorner")
+JobInputCorner.CornerRadius = UDim.new(0, 6)
+JobInputCorner.Parent = JobInputBox
+
+local JoinJobBtn = Instance.new("TextButton")
+JoinJobBtn.Size = UDim2.new(1, -16, 0, 24)
+JoinJobBtn.Position = UDim2.new(0, 8, 0, 36)
+JoinJobBtn.BackgroundColor3 = Color3.fromRGB(24, 38, 28)
+JoinJobBtn.Font = Enum.Font.GothamBold
+JoinJobBtn.Text = "Join Server by Job ID"
+JoinJobBtn.TextColor3 = Color3.fromRGB(150, 230, 150)
+JoinJobBtn.TextSize = 8
+JoinJobBtn.Parent = JoinJobFrame
+
+local JoinJobBtnCorner = Instance.new("UICorner")
+JoinJobBtnCorner.CornerRadius = UDim.new(0, 6)
+JoinJobBtnCorner.Parent = JoinJobBtn
+
+JoinJobBtn.MouseButton1Click:Connect(function()
+    local jobIdText = JobInputBox.Text
+    if jobIdText ~= "" then
+        ShowNotification("Teleporting to specified Job ID...", Color3.fromRGB(230, 220, 140))
+        pcall(function()
+            TeleportService:TeleportToPlaceInstance(game.PlaceId, jobIdText, LocalPlayer)
+        end)
+    else
+        ShowNotification("Please enter a valid Job ID first!", Color3.fromRGB(240, 140, 140))
     end
 end)
 
