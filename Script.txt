@@ -1,4 +1,4 @@
--- Internal Hub (Modern Left-Sidebar Navigation Layout & AI Assistant Module + Working Chat Lock/Unlock + CMDS Directory)
+-- Internal Hub (Balanced Modern Theme Layout & AI Assistant Module + Working Chat Lock/Unlock + CMDS Directory)
 
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
@@ -24,6 +24,18 @@ ScreenGui.Name = "InternalHubGui"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = ParentGui
 
+-- BALANCED THEME COLORS
+local Theme = {
+    Background = Color3.fromRGB(18, 18, 20),
+    Sidebar = Color3.fromRGB(24, 24, 28),
+    Container = Color3.fromRGB(30, 30, 36),
+    Element = Color3.fromRGB(38, 38, 46),
+    Border = Color3.fromRGB(60, 60, 72),
+    Accent = Color3.fromRGB(88, 101, 242),
+    Text = Color3.fromRGB(240, 240, 245),
+    SubText = Color3.fromRGB(160, 160, 175)
+}
+
 -- ARTISANAL NOTIFICATION SYSTEM
 local NotifContainer = Instance.new("Frame")
 NotifContainer.Size = UDim2.new(0, 260, 0, 280)
@@ -41,23 +53,23 @@ local function ShowNotification(message, accentColor)
     task.spawn(function()
         local notif = Instance.new("Frame")
         notif.Size = UDim2.new(1, 0, 0, 38)
-        notif.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        notif.BackgroundColor3 = Theme.Container
         notif.BackgroundTransparency = 1
         notif.Parent = NotifContainer
 
         local corner = Instance.new("UICorner")
-        corner.CornerRadius = UDim.new(0, 10)
+        corner.CornerRadius = UDim.new(0, 8)
         corner.Parent = notif
 
         local stroke = Instance.new("UIStroke")
-        stroke.Color = Color3.fromRGB(255, 255, 255)
+        stroke.Color = Theme.Border
         stroke.Transparency = 1
         stroke.Parent = notif
 
         local indicator = Instance.new("Frame")
         indicator.Size = UDim2.new(0, 4, 1, -14)
         indicator.Position = UDim2.new(0, 7, 0, 7)
-        indicator.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        indicator.BackgroundColor3 = accentColor or Theme.Accent
         indicator.BorderSizePixel = 0
         indicator.Parent = notif
 
@@ -71,7 +83,7 @@ local function ShowNotification(message, accentColor)
         label.BackgroundTransparency = 1
         label.Font = Enum.Font.GothamMedium
         label.Text = message
-        label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.TextColor3 = Theme.Text
         label.TextSize = 10
         label.TextXAlignment = Enum.TextXAlignment.Left
         label.Parent = notif
@@ -97,20 +109,20 @@ end
 local OpenCloseBtn = Instance.new("TextButton")
 OpenCloseBtn.Size = UDim2.new(0, 44, 0, 44)
 OpenCloseBtn.Position = UDim2.new(0, 18, 0.5, -22)
-OpenCloseBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+OpenCloseBtn.BackgroundColor3 = Theme.Sidebar
 OpenCloseBtn.Font = Enum.Font.GothamBold
-OpenCloseBtn.Text = "X"
-OpenCloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-OpenCloseBtn.TextSize = 14
+OpenCloseBtn.Text = "HUB"
+OpenCloseBtn.TextColor3 = Theme.Text
+OpenCloseBtn.TextSize = 10
 OpenCloseBtn.ZIndex = 10
 OpenCloseBtn.Parent = ScreenGui
 
 local OpenCloseCorner = Instance.new("UICorner")
-OpenCloseCorner.CornerRadius = UDim.new(0, 14)
+OpenCloseCorner.CornerRadius = UDim.new(0, 12)
 OpenCloseCorner.Parent = OpenCloseBtn
 
 local OpenCloseStroke = Instance.new("UIStroke")
-OpenCloseStroke.Color = Color3.fromRGB(255, 255, 255)
+OpenCloseStroke.Color = Theme.Border
 OpenCloseStroke.Parent = OpenCloseBtn
 
 -- MAIN HUB CONTAINER
@@ -118,19 +130,18 @@ local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 560, 0, 340)
 MainFrame.Position = UDim2.new(0.5, -280, 0.5, -170)
-MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+MainFrame.BackgroundColor3 = Theme.Background
 MainFrame.BorderSizePixel = 0
 MainFrame.Parent = ScreenGui
 
 local MainStroke = Instance.new("UIStroke")
-MainStroke.Color = Color3.fromRGB(255, 255, 255)
+MainStroke.Color = Theme.Border
 MainStroke.Parent = MainFrame
 
 local MainCorner = Instance.new("UICorner")
-MainCorner.CornerRadius = UDim.new(0, 14)
+MainCorner.CornerRadius = UDim.new(0, 12)
 MainCorner.Parent = MainFrame
 
--- UI Lock State Variable
 local isUiLocked = false
 
 OpenCloseBtn.MouseButton1Click:Connect(function()
@@ -171,18 +182,18 @@ end)
 -- TOPBAR TITLE / CLOSE & TOP BUTTONS
 local TopBar = Instance.new("Frame")
 TopBar.Size = UDim2.new(1, 0, 0, 42)
-TopBar.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+TopBar.BackgroundColor3 = Theme.Sidebar
 TopBar.BorderSizePixel = 0
 TopBar.Parent = MainFrame
 
 local TopCorner = Instance.new("UICorner")
-TopCorner.CornerRadius = UDim.new(0, 14)
+TopCorner.CornerRadius = UDim.new(0, 12)
 TopCorner.Parent = TopBar
 
 local TopBarSquare = Instance.new("Frame")
-TopBarSquare.Size = UDim2.new(1, 0, 0, 14)
-TopBarSquare.Position = UDim2.new(0, 0, 1, -14)
-TopBarSquare.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+TopBarSquare.Size = UDim2.new(1, 0, 0, 12)
+TopBarSquare.Position = UDim2.new(0, 0, 1, -12)
+TopBarSquare.BackgroundColor3 = Theme.Sidebar
 TopBarSquare.BorderSizePixel = 0
 TopBarSquare.Parent = TopBar
 
@@ -192,15 +203,14 @@ HubTitle.Position = UDim2.new(0, 16, 0, 0)
 HubTitle.BackgroundTransparency = 1
 HubTitle.Font = Enum.Font.GothamBold
 HubTitle.Text = "INTERNAL EXECUTOR"
-HubTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+HubTitle.TextColor3 = Theme.Text
 HubTitle.TextSize = 10
 HubTitle.TextXAlignment = Enum.TextXAlignment.Left
 HubTitle.Parent = TopBar
 
--- Top Action Icons / Buttons
 local TopActionContainer = Instance.new("Frame")
-TopActionContainer.Size = UDim2.new(0, 120, 1, 0)
-TopActionContainer.Position = UDim2.new(1, -130, 0, 0)
+TopActionContainer.Size = UDim2.new(0, 150, 1, 0)
+TopActionContainer.Position = UDim2.new(1, -160, 0, 0)
 TopActionContainer.BackgroundTransparency = 1
 TopActionContainer.Parent = TopBar
 
@@ -208,41 +218,41 @@ local TopActionLayout = Instance.new("UIListLayout")
 TopActionLayout.FillDirection = Enum.FillDirection.Horizontal
 TopActionLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
 TopActionLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-TopActionLayout.Padding = UDim.new(0, 8)
+TopActionLayout.Padding = UDim.new(0, 6)
 TopActionLayout.Parent = TopActionContainer
 
 local function CreateTopIconButton(text, callback)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 28, 0, 28)
-    btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    btn.Size = UDim2.new(0, 40, 0, 26)
+    btn.BackgroundColor3 = Theme.Element
     btn.Font = Enum.Font.GothamBold
     btn.Text = text
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.TextSize = 10
+    btn.TextColor3 = Theme.SubText
+    btn.TextSize = 8
     btn.Parent = TopActionContainer
 
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 8)
+    corner.CornerRadius = UDim.new(0, 6)
     corner.Parent = btn
 
     local stroke = Instance.new("UIStroke")
-    stroke.Color = Color3.fromRGB(255, 255, 255)
+    stroke.Color = Theme.Border
     stroke.Parent = btn
 
     btn.MouseButton1Click:Connect(callback)
     return btn
 end
 
-CreateTopIconButton("Settings", function()
-    ShowNotification("Settings Panel Active", Color3.fromRGB(255, 255, 255))
+CreateTopIconButton("Config", function()
+    ShowNotification("Configuration system active", Theme.Accent)
 end)
 
 CreateTopIconButton("Discord", function()
-    ShowNotification("Discord Community Link Ready", Color3.fromRGB(255, 255, 255))
+    ShowNotification("Community link ready", Theme.Accent)
 end)
 
 CreateTopIconButton("Source", function()
-    ShowNotification("Source Code Toggle", Color3.fromRGB(255, 255, 255))
+    ShowNotification("Source status normal", Theme.Accent)
 end)
 
 -- CHAT COMMANDS FUNCTIONALITY (!tpto, !reset, !lock, !unlock, !fix)
@@ -257,7 +267,7 @@ LocalPlayer.Chatted:Connect(function(message)
     if cmd == "!tpto" then
         local targetName = args[2]
         if not targetName then
-            ShowNotification("Usage: !tpto <player>", Color3.fromRGB(255, 255, 255))
+            ShowNotification("Usage: !tpto <player>", Color3.fromRGB(240, 100, 100))
             return
         end
         
@@ -284,38 +294,39 @@ LocalPlayer.Chatted:Connect(function(message)
             local myRoot = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
             if myRoot then
                 myRoot.CFrame = foundPlayer.Character.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)
-                ShowNotification("Teleported to " .. foundPlayer.Name, Color3.fromRGB(255, 255, 255))
+                ShowNotification("Teleported to " .. foundPlayer.Name, Theme.Accent)
             end
         else
-            ShowNotification("Player not found or has no character!", Color3.fromRGB(255, 255, 255))
+            ShowNotification("Player not found or has no character!", Color3.fromRGB(240, 100, 100))
         end
     elseif cmd == "!reset" then
         local char = LocalPlayer.Character
         if char and char:FindFirstChildOfClass("Humanoid") then
             char:FindFirstChildOfClass("Humanoid").Health = 0
-            ShowNotification("Reset character via chat", Color3.fromRGB(255, 255, 255))
+            ShowNotification("Reset character via chat", Theme.Accent)
         end
     elseif cmd == "!lock" then
         isUiLocked = true
-        ShowNotification("UI Position Locked via chat command", Color3.fromRGB(255, 255, 255))
+        ShowNotification("UI Position Locked via chat command", Theme.Accent)
     elseif cmd == "!unlock" then
         isUiLocked = false
-        ShowNotification("UI Position Unlocked via chat command", Color3.fromRGB(255, 255, 255))
+        ShowNotification("UI Position Unlocked via chat command", Theme.Accent)
     elseif cmd == "!fix" then
         isUiLocked = false
         ScreenGui.Parent = (gethui and gethui()) or LocalPlayer:WaitForChild("PlayerGui")
         MainFrame.Position = UDim2.new(0.5, -280, 0.5, -170)
         OpenCloseBtn.Position = UDim2.new(0, 18, 0.5, -22)
         MainFrame.Visible = true
-        ShowNotification("UI Force Reset to Center Screen", Color3.fromRGB(255, 255, 255))
+        ShowNotification("UI Force Reset to Center Screen", Theme.Accent)
     end
 end)
 
--- LEFT-SIDE NAVIGATION CONTAINER WITH TEXT-BASED LABELS
+-- LEFT-SIDE NAVIGATION CONTAINER
 local NavContainer = Instance.new("ScrollingFrame")
 NavContainer.Size = UDim2.new(0, 84, 1, -42)
 NavContainer.Position = UDim2.new(0, 0, 0, 42)
-NavContainer.BackgroundTransparency = 1
+NavContainer.BackgroundColor3 = Theme.Sidebar
+NavContainer.BorderSizePixel = 0
 NavContainer.ScrollBarThickness = 0
 NavContainer.Parent = MainFrame
 
@@ -352,13 +363,13 @@ local AdminPanel = CreatePanel()
 
 SavedPanel.Visible = true
 
-local function CreateNavButton(nameText, panel, isSpecial, isAI)
+local function CreateNavButton(nameText, panel)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(0, 72, 0, 28)
-    btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    btn.BackgroundColor3 = Theme.Element
     btn.Font = Enum.Font.GothamBold
     btn.Text = nameText
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextColor3 = Theme.SubText
     btn.TextSize = 8
     btn.Parent = NavContainer
 
@@ -367,7 +378,7 @@ local function CreateNavButton(nameText, panel, isSpecial, isAI)
     corner.Parent = btn
 
     local stroke = Instance.new("UIStroke")
-    stroke.Color = Color3.fromRGB(255, 255, 255)
+    stroke.Color = Theme.Border
     stroke.Parent = btn
 
     btn.MouseButton1Click:Connect(function()
@@ -382,15 +393,15 @@ local function CreateNavButton(nameText, panel, isSpecial, isAI)
     end)
 end
 
-CreateNavButton("Saved", SavedPanel, false, false)
-CreateNavButton("Executor", ExecPanel, false, false)
-CreateNavButton("Search", SearchPanel, false, false)
-CreateNavButton("Misc", MiscPanel, false, false)
-CreateNavButton("AI Chat", AiPanel, false, true)
-CreateNavButton("Commands", CommandsPanel, false, false)
+CreateNavButton("Saved", SavedPanel)
+CreateNavButton("Executor", ExecPanel)
+CreateNavButton("Search", SearchPanel)
+CreateNavButton("Misc", MiscPanel)
+CreateNavButton("AI Chat", AiPanel)
+CreateNavButton("Commands", CommandsPanel)
 
 if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
-    CreateNavButton("Admin", AdminPanel, true, false)
+    CreateNavButton("Admin", AdminPanel)
 end
 
 NavContainer.CanvasSize = UDim2.new(0, 0, 0, NavLayout.AbsoluteContentSize.Y + 10)
@@ -445,10 +456,10 @@ LoadConfigsFromFile()
 -- SAVED SYSTEM PANEL
 local UploadBtn = Instance.new("TextButton")
 UploadBtn.Size = UDim2.new(1, 0, 0, 32)
-UploadBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+UploadBtn.BackgroundColor3 = Theme.Container
 UploadBtn.Font = Enum.Font.GothamBold
 UploadBtn.Text = "+ Add Custom Script"
-UploadBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+UploadBtn.TextColor3 = Theme.Text
 UploadBtn.TextSize = 9
 UploadBtn.Parent = SavedPanel
 
@@ -457,7 +468,7 @@ UploadCorner.CornerRadius = UDim.new(0, 8)
 UploadCorner.Parent = UploadBtn
 
 local UploadStroke = Instance.new("UIStroke")
-UploadStroke.Color = Color3.fromRGB(255, 255, 255)
+UploadStroke.Color = Theme.Border
 UploadStroke.Parent = UploadBtn
 
 local ScriptScroll = Instance.new("ScrollingFrame")
@@ -465,7 +476,7 @@ ScriptScroll.Size = UDim2.new(1, 0, 1, -40)
 ScriptScroll.Position = UDim2.new(0, 0, 0, 40)
 ScriptScroll.BackgroundTransparency = 1
 ScriptScroll.ScrollBarThickness = 3
-ScriptScroll.ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255)
+ScriptScroll.ScrollBarImageColor3 = Theme.Border
 ScriptScroll.Parent = SavedPanel
 
 local ScrollLayout = Instance.new("UIListLayout")
@@ -483,7 +494,7 @@ ModalBg.Parent = MainFrame
 local ModalBox = Instance.new("Frame")
 ModalBox.Size = UDim2.new(0, 290, 0, 205)
 ModalBox.Position = UDim2.new(0.5, -145, 0.5, -102)
-ModalBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ModalBox.BackgroundColor3 = Theme.Container
 ModalBox.ZIndex = 6
 ModalBox.Parent = ModalBg
 
@@ -492,18 +503,18 @@ ModalCorner.CornerRadius = UDim.new(0, 12)
 ModalCorner.Parent = ModalBox
 
 local ModalStroke = Instance.new("UIStroke")
-ModalStroke.Color = Color3.fromRGB(255, 255, 255)
+ModalStroke.Color = Theme.Border
 ModalStroke.Parent = ModalBox
 
 local NameInput = Instance.new("TextBox")
 NameInput.Size = UDim2.new(1, -24, 0, 32)
 NameInput.Position = UDim2.new(0, 12, 0, 14)
-NameInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+NameInput.BackgroundColor3 = Theme.Element
 NameInput.Font = Enum.Font.GothamMedium
 NameInput.PlaceholderText = "Script Title..."
 NameInput.Text = ""
-NameInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-NameInput.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+NameInput.TextColor3 = Theme.Text
+NameInput.PlaceholderColor3 = Theme.SubText
 NameInput.TextSize = 9
 NameInput.ZIndex = 7
 NameInput.Parent = ModalBox
@@ -513,19 +524,19 @@ NameCorner.CornerRadius = UDim.new(0, 8)
 NameCorner.Parent = NameInput
 
 local NameStroke = Instance.new("UIStroke")
-NameStroke.Color = Color3.fromRGB(255, 255, 255)
+NameStroke.Color = Theme.Border
 NameStroke.Parent = NameInput
 
 local CodeInput = Instance.new("TextBox")
 CodeInput.Size = UDim2.new(1, -24, 0, 100)
 CodeInput.Position = UDim2.new(0, 12, 0, 54)
-CodeInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+CodeInput.BackgroundColor3 = Theme.Element
 CodeInput.Font = Enum.Font.Code
 CodeInput.MultiLine = true
 CodeInput.PlaceholderText = "-- Paste Luau code here..."
 CodeInput.Text = ""
-CodeInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-CodeInput.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+CodeInput.TextColor3 = Theme.Text
+CodeInput.PlaceholderColor3 = Theme.SubText
 CodeInput.TextSize = 9
 CodeInput.TextXAlignment = Enum.TextXAlignment.Left
 CodeInput.TextYAlignment = Enum.TextYAlignment.Top
@@ -537,16 +548,16 @@ CodeCorner.CornerRadius = UDim.new(0, 8)
 CodeCorner.Parent = CodeInput
 
 local CodeStroke = Instance.new("UIStroke")
-CodeStroke.Color = Color3.fromRGB(255, 255, 255)
+CodeStroke.Color = Theme.Border
 CodeStroke.Parent = CodeInput
 
 local SaveActionBtn = Instance.new("TextButton")
 SaveActionBtn.Size = UDim2.new(0, 124, 0, 30)
 SaveActionBtn.Position = UDim2.new(0, 12, 1, -38)
-SaveActionBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+SaveActionBtn.BackgroundColor3 = Theme.Accent
 SaveActionBtn.Font = Enum.Font.GothamBold
 SaveActionBtn.Text = "Save Entry"
-SaveActionBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+SaveActionBtn.TextColor3 = Theme.Text
 SaveActionBtn.TextSize = 9
 SaveActionBtn.ZIndex = 7
 SaveActionBtn.Parent = ModalBox
@@ -556,16 +567,16 @@ SaveActionCorner.CornerRadius = UDim.new(0, 8)
 SaveActionCorner.Parent = SaveActionBtn
 
 local SaveActionStroke = Instance.new("UIStroke")
-SaveActionStroke.Color = Color3.fromRGB(255, 255, 255)
+SaveActionStroke.Color = Theme.Border
 SaveActionStroke.Parent = SaveActionBtn
 
 local CancelModalBtn = Instance.new("TextButton")
 CancelModalBtn.Size = UDim2.new(0, 124, 0, 30)
 CancelModalBtn.Position = UDim2.new(1, -136, 1, -38)
-CancelModalBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+CancelModalBtn.BackgroundColor3 = Theme.Element
 CancelModalBtn.Font = Enum.Font.GothamBold
 CancelModalBtn.Text = "Dismiss"
-CancelModalBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CancelModalBtn.TextColor3 = Theme.SubText
 CancelModalBtn.TextSize = 9
 CancelModalBtn.ZIndex = 7
 CancelModalBtn.Parent = ModalBox
@@ -575,7 +586,7 @@ CancelCorner.CornerRadius = UDim.new(0, 8)
 CancelCorner.Parent = CancelModalBtn
 
 local CancelStroke = Instance.new("UIStroke")
-CancelStroke.Color = Color3.fromRGB(255, 255, 255)
+CancelStroke.Color = Theme.Border
 CancelStroke.Parent = CancelModalBtn
 
 UploadBtn.MouseButton1Click:Connect(function() ModalBg.Visible = true end)
@@ -586,14 +597,14 @@ local ExecBoxInstance = Instance.new("TextBox")
 ExecBoxInstance.Name = "ExecBox"
 ExecBoxInstance.Size = UDim2.new(1, 0, 1, -38)
 ExecBoxInstance.Position = UDim2.new(0, 0, 0, 0)
-ExecBoxInstance.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ExecBoxInstance.BackgroundColor3 = Theme.Container
 ExecBoxInstance.Font = Enum.Font.Code
 ExecBoxInstance.MultiLine = true
 ExecBoxInstance.ClearTextOnFocus = false
 ExecBoxInstance.PlaceholderText = "-- Type or paste execution source..."
 ExecBoxInstance.Text = ""
-ExecBoxInstance.TextColor3 = Color3.fromRGB(255, 255, 255)
-ExecBoxInstance.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+ExecBoxInstance.TextColor3 = Theme.Text
+ExecBoxInstance.PlaceholderColor3 = Theme.SubText
 ExecBoxInstance.TextSize = 9
 ExecBoxInstance.TextXAlignment = Enum.TextXAlignment.Left
 ExecBoxInstance.TextYAlignment = Enum.TextYAlignment.Top
@@ -604,16 +615,16 @@ ExecBoxCorner.CornerRadius = UDim.new(0, 8)
 ExecBoxCorner.Parent = ExecBoxInstance
 
 local ExecBoxStroke = Instance.new("UIStroke")
-ExecBoxStroke.Color = Color3.fromRGB(255, 255, 255)
+ExecBoxStroke.Color = Theme.Border
 ExecBoxStroke.Parent = ExecBoxInstance
 
 local ExecActionBtn = Instance.new("TextButton")
 ExecActionBtn.Size = UDim2.new(0.5, -4, 0, 30)
 ExecActionBtn.Position = UDim2.new(0, 0, 1, -30)
-ExecActionBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ExecActionBtn.BackgroundColor3 = Theme.Accent
 ExecActionBtn.Font = Enum.Font.GothamBold
 ExecActionBtn.Text = "Execute Code"
-ExecActionBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ExecActionBtn.TextColor3 = Theme.Text
 ExecActionBtn.TextSize = 9
 ExecActionBtn.Parent = ExecPanel
 
@@ -622,16 +633,16 @@ ExecCorner.CornerRadius = UDim.new(0, 8)
 ExecCorner.Parent = ExecActionBtn
 
 local ExecActionStroke = Instance.new("UIStroke")
-ExecActionStroke.Color = Color3.fromRGB(255, 255, 255)
+ExecActionStroke.Color = Theme.Border
 ExecActionStroke.Parent = ExecActionBtn
 
 local ClearExecBtn = Instance.new("TextButton")
 ClearExecBtn.Size = UDim2.new(0.5, -4, 0, 30)
 ClearExecBtn.Position = UDim2.new(0.5, 4, 1, -30)
-ClearExecBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ClearExecBtn.BackgroundColor3 = Theme.Element
 ClearExecBtn.Font = Enum.Font.GothamBold
 ClearExecBtn.Text = "Clear"
-ClearExecBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ClearExecBtn.TextColor3 = Theme.SubText
 ClearExecBtn.TextSize = 9
 ClearExecBtn.Parent = ExecPanel
 
@@ -640,7 +651,7 @@ ClearExecCorner.CornerRadius = UDim.new(0, 8)
 ClearExecCorner.Parent = ClearExecBtn
 
 local ClearExecStroke = Instance.new("UIStroke")
-ClearExecStroke.Color = Color3.fromRGB(255, 255, 255)
+ClearExecStroke.Color = Theme.Border
 ClearExecStroke.Parent = ClearExecBtn
 
 ExecActionBtn.MouseButton1Click:Connect(function()
@@ -649,13 +660,13 @@ ExecActionBtn.MouseButton1Click:Connect(function()
             local fn = (loadstring or load)(ExecBoxInstance.Text)
             if fn then task.spawn(fn) end
         end)
-        ShowNotification("Executed code buffer successfully", Color3.fromRGB(255, 255, 255))
+        ShowNotification("Executed code buffer successfully", Theme.Accent)
     end
 end)
 
 ClearExecBtn.MouseButton1Click:Connect(function()
     ExecBoxInstance.Text = ""
-    ShowNotification("Cleared editor buffer", Color3.fromRGB(255, 255, 255))
+    ShowNotification("Cleared editor buffer", Theme.SubText)
 end)
 
 local RefreshSavedScripts
@@ -666,7 +677,7 @@ RefreshSavedScripts = function()
     for index, scriptData in ipairs(SavedScriptsList) do
         local itemFrame = Instance.new("Frame")
         itemFrame.Size = UDim2.new(1, 0, 0, 34)
-        itemFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        itemFrame.BackgroundColor3 = Theme.Container
         itemFrame.Parent = ScriptScroll
 
         local itemCorner = Instance.new("UICorner")
@@ -674,7 +685,7 @@ RefreshSavedScripts = function()
         itemCorner.Parent = itemFrame
 
         local itemStroke = Instance.new("UIStroke")
-        itemStroke.Color = Color3.fromRGB(255, 255, 255)
+        itemStroke.Color = Theme.Border
         itemStroke.Parent = itemFrame
 
         local label = Instance.new("TextLabel")
@@ -682,8 +693,8 @@ RefreshSavedScripts = function()
         label.Position = UDim2.new(0, 12, 0, 0)
         label.BackgroundTransparency = 1
         label.Font = Enum.Font.GothamMedium
-        label.Text = scriptData.name .. (scriptData.locked and " [FORCED]" or "")
-        label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.Text = scriptData.name .. (scriptData.locked and " [SECURE]" or "")
+        label.TextColor3 = Theme.Text
         label.TextSize = 9
         label.TextXAlignment = Enum.TextXAlignment.Left
         label.Parent = itemFrame
@@ -691,10 +702,10 @@ RefreshSavedScripts = function()
         local runBtn = Instance.new("TextButton")
         runBtn.Size = UDim2.new(0, 34, 0, 22)
         runBtn.Position = UDim2.new(1, -114, 0, 6)
-        runBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        runBtn.BackgroundColor3 = Theme.Element
         runBtn.Font = Enum.Font.GothamBold
         runBtn.Text = "Run"
-        runBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        runBtn.TextColor3 = Theme.Text
         runBtn.TextSize = 8
         runBtn.Parent = itemFrame
 
@@ -703,7 +714,7 @@ RefreshSavedScripts = function()
         runCorner.Parent = runBtn
 
         local runStroke = Instance.new("UIStroke")
-        runStroke.Color = Color3.fromRGB(255, 255, 255)
+        runStroke.Color = Theme.Border
         runStroke.Parent = runBtn
 
         runBtn.MouseButton1Click:Connect(function()
@@ -711,16 +722,16 @@ RefreshSavedScripts = function()
                 local fn = (loadstring or load)(scriptData.code)
                 if fn then task.spawn(fn) end
             end)
-            ShowNotification("Executed: " .. scriptData.name, Color3.fromRGB(255, 255, 255))
+            ShowNotification("Executed: " .. scriptData.name, Theme.Accent)
         end)
 
         local editBtn = Instance.new("TextButton")
         editBtn.Size = UDim2.new(0, 34, 0, 22)
         editBtn.Position = UDim2.new(1, -76, 0, 6)
-        editBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        editBtn.BackgroundColor3 = Theme.Element
         editBtn.Font = Enum.Font.GothamBold
         editBtn.Text = "Edit"
-        editBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        editBtn.TextColor3 = Theme.Text
         editBtn.TextSize = 8
         editBtn.Parent = itemFrame
 
@@ -729,23 +740,23 @@ RefreshSavedScripts = function()
         editCorner.Parent = editBtn
 
         local editStroke = Instance.new("UIStroke")
-        editStroke.Color = Color3.fromRGB(255, 255, 255)
+        editStroke.Color = Theme.Border
         editStroke.Parent = editBtn
 
         editBtn.MouseButton1Click:Connect(function()
             ExecBoxInstance.Text = scriptData.code
             SavedPanel.Visible = false
             ExecPanel.Visible = true
-            ShowNotification("Loaded script into editor", Color3.fromRGB(255, 255, 255))
+            ShowNotification("Loaded script into editor", Theme.Accent)
         end)
 
         local delBtn = Instance.new("TextButton")
         delBtn.Size = UDim2.new(0, 34, 0, 22)
         delBtn.Position = UDim2.new(1, -38, 0, 6)
-        delBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        delBtn.BackgroundColor3 = Theme.Element
         delBtn.Font = Enum.Font.GothamBold
         delBtn.Text = scriptData.locked and "Lock" or "Del"
-        delBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        delBtn.TextColor3 = Theme.SubText
         delBtn.TextSize = 8
         delBtn.Parent = itemFrame
 
@@ -754,19 +765,19 @@ RefreshSavedScripts = function()
         delCorner.Parent = delBtn
 
         local delStroke = Instance.new("UIStroke")
-        delStroke.Color = Color3.fromRGB(255, 255, 255)
+        delStroke.Color = Theme.Border
         delStroke.Parent = delBtn
 
         delBtn.MouseButton1Click:Connect(function()
             if scriptData.locked and LocalPlayer.Name ~= "dontaskmekdkdkdkkd" then
-                ShowNotification("Cannot delete a secured entry!", Color3.fromRGB(255, 255, 255))
+                ShowNotification("Cannot delete a secured entry!", Color3.fromRGB(240, 100, 100))
                 return
             end
             
             table.remove(SavedScriptsList, index)
             SaveConfigsToFile()
             RefreshSavedScripts()
-            ShowNotification("Removed item from library", Color3.fromRGB(255, 255, 255))
+            ShowNotification("Removed item from library", Theme.SubText)
         end)
     end
     ScriptScroll.CanvasSize = UDim2.new(0, 0, 0, ScrollLayout.AbsoluteContentSize.Y)
@@ -776,7 +787,7 @@ SaveActionBtn.MouseButton1Click:Connect(function()
     if NameInput.Text ~= "" and CodeInput.Text ~= "" then
         table.insert(SavedScriptsList, {name = NameInput.Text, code = CodeInput.Text, locked = false})
         SaveConfigsToFile()
-        ShowNotification("Saved entry to storage", Color3.fromRGB(255, 255, 255))
+        ShowNotification("Saved entry to storage", Theme.Accent)
         NameInput.Text = ""
         CodeInput.Text = ""
         ModalBg.Visible = false
@@ -792,7 +803,7 @@ AiChatScroll.Size = UDim2.new(1, 0, 1, -40)
 AiChatScroll.Position = UDim2.new(0, 0, 0, 0)
 AiChatScroll.BackgroundTransparency = 1
 AiChatScroll.ScrollBarThickness = 3
-AiChatScroll.ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255)
+AiChatScroll.ScrollBarImageColor3 = Theme.Border
 AiChatScroll.Parent = AiPanel
 
 local AiChatLayout = Instance.new("UIListLayout")
@@ -802,12 +813,12 @@ AiChatLayout.Parent = AiChatScroll
 local AiInputBox = Instance.new("TextBox")
 AiInputBox.Size = UDim2.new(1, -65, 0, 32)
 AiInputBox.Position = UDim2.new(0, 0, 1, -34)
-AiInputBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+AiInputBox.BackgroundColor3 = Theme.Container
 AiInputBox.Font = Enum.Font.GothamMedium
 AiInputBox.PlaceholderText = "Ask AI chatbot anything..."
 AiInputBox.Text = ""
-AiInputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-AiInputBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+AiInputBox.TextColor3 = Theme.Text
+AiInputBox.PlaceholderColor3 = Theme.SubText
 AiInputBox.TextSize = 9
 AiInputBox.TextXAlignment = Enum.TextXAlignment.Left
 AiInputBox.Parent = AiPanel
@@ -817,16 +828,16 @@ AiInputCorner.CornerRadius = UDim.new(0, 8)
 AiInputCorner.Parent = AiInputBox
 
 local AiInputStroke = Instance.new("UIStroke")
-AiInputStroke.Color = Color3.fromRGB(255, 255, 255)
+AiInputStroke.Color = Theme.Border
 AiInputStroke.Parent = AiInputBox
 
 local AiSendBtn = Instance.new("TextButton")
 AiSendBtn.Size = UDim2.new(0, 58, 0, 32)
 AiSendBtn.Position = UDim2.new(1, -58, 1, -34)
-AiSendBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+AiSendBtn.BackgroundColor3 = Theme.Accent
 AiSendBtn.Font = Enum.Font.GothamBold
 AiSendBtn.Text = "Send"
-AiSendBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+AiSendBtn.TextColor3 = Theme.Text
 AiSendBtn.TextSize = 9
 AiSendBtn.Parent = AiPanel
 
@@ -835,22 +846,30 @@ AiSendCorner.CornerRadius = UDim.new(0, 8)
 AiSendCorner.Parent = AiSendBtn
 
 local AiSendStroke = Instance.new("UIStroke")
-AiSendStroke.Color = Color3.fromRGB(255, 255, 255)
+AiSendStroke.Color = Theme.Border
 AiSendStroke.Parent = AiSendBtn
 
 local function AppendChatMessage(sender, text, isUser)
     local msgFrame = Instance.new("Frame")
     msgFrame.Size = UDim2.new(1, 0, 0, 0)
-    msgFrame.BackgroundTransparency = 1
+    msgFrame.BackgroundColor3 = Theme.Container
     msgFrame.Parent = AiChatScroll
 
+    local msgCorner = Instance.new("UICorner")
+    msgCorner.CornerRadius = UDim.new(0, 6)
+    msgCorner.Parent = msgFrame
+
+    local msgStroke = Instance.new("UIStroke")
+    msgStroke.Color = Theme.Border
+    msgStroke.Parent = msgFrame
+
     local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, -12, 0, 0)
-    label.Position = UDim2.new(0, 6, 0, 0)
+    label.Size = UDim2.new(1, -16, 0, 0)
+    label.Position = UDim2.new(0, 8, 0, 4)
     label.BackgroundTransparency = 1
     label.Font = Enum.Font.GothamMedium
     label.Text = sender .. ": " .. text
-    label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.TextColor3 = Theme.Text
     label.TextSize = 9
     label.TextWrapped = true
     label.TextXAlignment = Enum.TextXAlignment.Left
@@ -858,8 +877,8 @@ local function AppendChatMessage(sender, text, isUser)
 
     task.spawn(function()
         task.wait()
-        label.Size = UDim2.new(1, -12, 0, label.TextBounds.Y + 6)
-        msgFrame.Size = UDim2.new(1, 0, 0, label.TextBounds.Y + 10)
+        label.Size = UDim2.new(1, -16, 0, label.TextBounds.Y + 4)
+        msgFrame.Size = UDim2.new(1, 0, 0, label.TextBounds.Y + 12)
         AiChatScroll.CanvasSize = UDim2.new(0, 0, 0, AiChatLayout.AbsoluteContentSize.Y)
         AiChatScroll.CanvasPosition = Vector2.new(0, AiChatScroll.CanvasSize.Y.Offset)
     end)
@@ -881,7 +900,7 @@ AiSendBtn.MouseButton1Click:Connect(function()
             local payload = {
                 model = "openai/gpt-oss-20b",
                 messages = {
-                    {role = "system", content = "You are a conversational general-purpose AI chatbot. Answer questions conversationally and directly. Do not write Lua code or scripts unless explicitly asked for regular text explanations."},
+                    {role = "system", content = "You are a conversational general-purpose AI chatbot. Answer questions conversationally and directly."},
                     {role = "user", content = text}
                 },
                 temperature = 0.7
@@ -918,19 +937,19 @@ if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
     AdminTitle.BackgroundTransparency = 1
     AdminTitle.Font = Enum.Font.GothamBold
     AdminTitle.Text = "-- RESTRICTED ADMIN INTERFACE --"
-    AdminTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    AdminTitle.TextColor3 = Theme.Text
     AdminTitle.TextSize = 9
     AdminTitle.Parent = AdminPanel
 
     local ForceNameInput = Instance.new("TextBox")
     ForceNameInput.Size = UDim2.new(1, 0, 0, 30)
     ForceNameInput.Position = UDim2.new(0, 0, 0, 22)
-    ForceNameInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    ForceNameInput.BackgroundColor3 = Theme.Container
     ForceNameInput.Font = Enum.Font.GothamMedium
     ForceNameInput.PlaceholderText = "Forced Script Title..."
     ForceNameInput.Text = ""
-    ForceNameInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-    ForceNameInput.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+    ForceNameInput.TextColor3 = Theme.Text
+    ForceNameInput.PlaceholderColor3 = Theme.SubText
     ForceNameInput.TextSize = 9
     ForceNameInput.Parent = AdminPanel
 
@@ -939,19 +958,19 @@ if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
     ForceNameCorner.Parent = ForceNameInput
 
     local ForceNameStroke = Instance.new("UIStroke")
-    ForceNameStroke.Color = Color3.fromRGB(255, 255, 255)
+    ForceNameStroke.Color = Theme.Border
     ForceNameStroke.Parent = ForceNameInput
 
     local ForceCodeInput = Instance.new("TextBox")
     ForceCodeInput.Size = UDim2.new(1, 0, 0, 85)
     ForceCodeInput.Position = UDim2.new(0, 0, 0, 58)
-    ForceCodeInput.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    ForceCodeInput.BackgroundColor3 = Theme.Container
     ForceCodeInput.Font = Enum.Font.Code
     ForceCodeInput.MultiLine = true
     ForceCodeInput.PlaceholderText = "-- Force code deployment..."
     ForceCodeInput.Text = ""
-    ForceCodeInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-    ForceCodeInput.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+    ForceCodeInput.TextColor3 = Theme.Text
+    ForceCodeInput.PlaceholderColor3 = Theme.SubText
     ForceCodeInput.TextSize = 8
     ForceCodeInput.TextXAlignment = Enum.TextXAlignment.Left
     ForceCodeInput.TextYAlignment = Enum.TextYAlignment.Top
@@ -962,16 +981,16 @@ if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
     ForceCodeCorner.Parent = ForceCodeInput
 
     local ForceCodeStroke = Instance.new("UIStroke")
-    ForceCodeStroke.Color = Color3.fromRGB(255, 255, 255)
+    ForceCodeStroke.Color = Theme.Border
     ForceCodeStroke.Parent = ForceCodeInput
 
     local ForceBtn = Instance.new("TextButton")
     ForceBtn.Size = UDim2.new(1, 0, 0, 30)
     ForceBtn.Position = UDim2.new(0, 0, 1, -30)
-    ForceBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    ForceBtn.BackgroundColor3 = Theme.Accent
     ForceBtn.Font = Enum.Font.GothamBold
     ForceBtn.Text = "Deploy Global Forced Script"
-    ForceBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ForceBtn.TextColor3 = Theme.Text
     ForceBtn.TextSize = 9
     ForceBtn.Parent = AdminPanel
 
@@ -980,7 +999,7 @@ if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
     ForceBtnCorner.Parent = ForceBtn
 
     local ForceBtnStroke = Instance.new("UIStroke")
-    ForceBtnStroke.Color = Color3.fromRGB(255, 255, 255)
+    ForceBtnStroke.Color = Theme.Border
     ForceBtnStroke.Parent = ForceBtn
 
     ForceBtn.MouseButton1Click:Connect(function()
@@ -997,7 +1016,7 @@ if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
             
             ForceNameInput.Text = ""
             ForceCodeInput.Text = ""
-            ShowNotification("Successfully deployed global injection!", Color3.fromRGB(255, 255, 255))
+            ShowNotification("Successfully deployed global injection!", Theme.Accent)
         end
     end)
 end
@@ -1008,7 +1027,7 @@ CommandsTitle.Size = UDim2.new(1, 0, 0, 18)
 CommandsTitle.BackgroundTransparency = 1
 CommandsTitle.Font = Enum.Font.GothamBold
 CommandsTitle.Text = "-- SYSTEM COMMANDS DIRECTORY --"
-CommandsTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+CommandsTitle.TextColor3 = Theme.Text
 CommandsTitle.TextSize = 9
 CommandsTitle.Parent = CommandsPanel
 
@@ -1017,7 +1036,7 @@ CommandsScroll.Size = UDim2.new(1, 0, 1, -24)
 CommandsScroll.Position = UDim2.new(0, 0, 0, 24)
 CommandsScroll.BackgroundTransparency = 1
 CommandsScroll.ScrollBarThickness = 3
-CommandsScroll.ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255)
+CommandsScroll.ScrollBarImageColor3 = Theme.Border
 CommandsScroll.Parent = CommandsPanel
 
 local CommandsLayout = Instance.new("UIListLayout")
@@ -1025,7 +1044,7 @@ CommandsLayout.Padding = UDim.new(0, 5)
 CommandsLayout.Parent = CommandsScroll
 
 local commandList = {
-    {cmd = "!tpto <player>", status = "Active", desc = "Instantly teleports local character coordinates to target (supports partial names)."},
+    {cmd = "!tpto <player>", status = "Active", desc = "Instantly teleports local character coordinates to target."},
     {cmd = "!reset", status = "Active", desc = "Resets/kills your current character."},
     {cmd = "!lock", status = "Active", desc = "Locks the interface position and toggle button."},
     {cmd = "!unlock", status = "Active", desc = "Unlocks the interface position and toggle button."},
@@ -1035,7 +1054,7 @@ local commandList = {
 for _, info in ipairs(commandList) do
     local item = Instance.new("Frame")
     item.Size = UDim2.new(1, 0, 0, 36)
-    item.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    item.BackgroundColor3 = Theme.Container
     item.Parent = CommandsScroll
 
     local corner = Instance.new("UICorner")
@@ -1043,7 +1062,7 @@ for _, info in ipairs(commandList) do
     corner.Parent = item
 
     local stroke = Instance.new("UIStroke")
-    stroke.Color = Color3.fromRGB(255, 255, 255)
+    stroke.Color = Theme.Border
     stroke.Parent = item
 
     local titleLbl = Instance.new("TextLabel")
@@ -1052,7 +1071,7 @@ for _, info in ipairs(commandList) do
     titleLbl.BackgroundTransparency = 1
     titleLbl.Font = Enum.Font.GothamBold
     titleLbl.Text = info.cmd
-    titleLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLbl.TextColor3 = Theme.Text
     titleLbl.TextSize = 9
     titleLbl.TextXAlignment = Enum.TextXAlignment.Left
     titleLbl.Parent = item
@@ -1063,7 +1082,7 @@ for _, info in ipairs(commandList) do
     statusLbl.BackgroundTransparency = 1
     statusLbl.Font = Enum.Font.GothamMedium
     statusLbl.Text = "[" .. info.status .. "]"
-    statusLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+    statusLbl.TextColor3 = Theme.Accent
     statusLbl.TextSize = 8
     statusLbl.TextXAlignment = Enum.TextXAlignment.Right
     statusLbl.Parent = item
@@ -1074,7 +1093,7 @@ for _, info in ipairs(commandList) do
     descLbl.BackgroundTransparency = 1
     descLbl.Font = Enum.Font.GothamMedium
     descLbl.Text = info.desc
-    descLbl.TextColor3 = Color3.fromRGB(200, 200, 200)
+    descLbl.TextColor3 = Theme.SubText
     descLbl.TextSize = 8
     descLbl.TextXAlignment = Enum.TextXAlignment.Left
     descLbl.Parent = item
@@ -1086,12 +1105,12 @@ CommandsScroll.CanvasSize = UDim2.new(0, 0, 0, CommandsLayout.AbsoluteContentSiz
 local SearchBox = Instance.new("TextBox")
 SearchBox.Size = UDim2.new(1, 0, 0, 32)
 SearchBox.Position = UDim2.new(0, 0, 0, 0)
-SearchBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+SearchBox.BackgroundColor3 = Theme.Container
 SearchBox.Font = Enum.Font.GothamMedium
 SearchBox.PlaceholderText = "Search ScriptBlox database..."
 SearchBox.Text = ""
-SearchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-SearchBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+SearchBox.TextColor3 = Theme.Text
+SearchBox.PlaceholderColor3 = Theme.SubText
 SearchBox.TextSize = 9
 SearchBox.TextXAlignment = Enum.TextXAlignment.Left
 SearchBox.Parent = SearchPanel
@@ -1101,7 +1120,7 @@ SearchBoxCorner.CornerRadius = UDim.new(0, 8)
 SearchBoxCorner.Parent = SearchBox
 
 local SearchBoxStroke = Instance.new("UIStroke")
-SearchBoxStroke.Color = Color3.fromRGB(255, 255, 255)
+SearchBoxStroke.Color = Theme.Border
 SearchBoxStroke.Parent = SearchBox
 
 local SearchScroll = Instance.new("ScrollingFrame")
@@ -1109,7 +1128,7 @@ SearchScroll.Size = UDim2.new(1, 0, 1, -40)
 SearchScroll.Position = UDim2.new(0, 0, 0, 40)
 SearchScroll.BackgroundTransparency = 1
 SearchScroll.ScrollBarThickness = 3
-SearchScroll.ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255)
+SearchScroll.ScrollBarImageColor3 = Theme.Border
 SearchScroll.Parent = SearchPanel
 
 local SearchScrollLayout = Instance.new("UIListLayout")
@@ -1121,7 +1140,7 @@ SearchBox.FocusLost:Connect(function(enterPressed)
     for _, child in ipairs(SearchScroll:GetChildren()) do
         if child:IsA("Frame") then child:Destroy() end
     end
-    ShowNotification("Querying ScriptBlox...", Color3.fromRGB(255, 255, 255))
+    ShowNotification("Querying ScriptBlox...", Theme.Accent)
     task.spawn(function()
         local ok, res = pcall(function()
             local req = request or syn.request or http_request
@@ -1136,13 +1155,13 @@ SearchBox.FocusLost:Connect(function(enterPressed)
         end)
         if ok and res and res.result and res.result.scripts then
             if #res.result.scripts == 0 then
-                ShowNotification("No matching records found.", Color3.fromRGB(255, 255, 255))
+                ShowNotification("No matching records found.", Theme.SubText)
                 return
             end
             for _, scriptData in ipairs(res.result.scripts) do
                 local itemFrame = Instance.new("Frame")
                 itemFrame.Size = UDim2.new(1, 0, 0, 34)
-                itemFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+                itemFrame.BackgroundColor3 = Theme.Container
                 itemFrame.Parent = SearchScroll
 
                 local itemCorner = Instance.new("UICorner")
@@ -1150,7 +1169,7 @@ SearchBox.FocusLost:Connect(function(enterPressed)
                 itemCorner.Parent = itemFrame
 
                 local itemStroke = Instance.new("UIStroke")
-                itemStroke.Color = Color3.fromRGB(255, 255, 255)
+                itemStroke.Color = Theme.Border
                 itemStroke.Parent = itemFrame
 
                 local label = Instance.new("TextLabel")
@@ -1159,7 +1178,7 @@ SearchBox.FocusLost:Connect(function(enterPressed)
                 label.BackgroundTransparency = 1
                 label.Font = Enum.Font.GothamMedium
                 label.Text = scriptData.title or "Untitled"
-                label.TextColor3 = Color3.fromRGB(255, 255, 255)
+                label.TextColor3 = Theme.Text
                 label.TextSize = 9
                 label.TextXAlignment = Enum.TextXAlignment.Left
                 label.Parent = itemFrame
@@ -1167,10 +1186,10 @@ SearchBox.FocusLost:Connect(function(enterPressed)
                 local runBtn = Instance.new("TextButton")
                 runBtn.Size = UDim2.new(0, 34, 0, 22)
                 runBtn.Position = UDim2.new(1, -114, 0, 6)
-                runBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+                runBtn.BackgroundColor3 = Theme.Element
                 runBtn.Font = Enum.Font.GothamBold
                 runBtn.Text = "Run"
-                runBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+                runBtn.TextColor3 = Theme.Text
                 runBtn.TextSize = 8
                 runBtn.Parent = itemFrame
 
@@ -1179,7 +1198,7 @@ SearchBox.FocusLost:Connect(function(enterPressed)
                 runCorner.Parent = runBtn
 
                 local runStroke = Instance.new("UIStroke")
-                runStroke.Color = Color3.fromRGB(255, 255, 255)
+                runStroke.Color = Theme.Border
                 runStroke.Parent = runBtn
 
                 runBtn.MouseButton1Click:Connect(function()
@@ -1187,16 +1206,16 @@ SearchBox.FocusLost:Connect(function(enterPressed)
                         local fn = (loadstring or load)(scriptData.script)
                         if fn then task.spawn(fn) end
                     end)
-                    ShowNotification("Executed: " .. (scriptData.title or "Script"), Color3.fromRGB(255, 255, 255))
+                    ShowNotification("Executed: " .. (scriptData.title or "Script"), Theme.Accent)
                 end)
 
                 local copyBtn = Instance.new("TextButton")
                 copyBtn.Size = UDim2.new(0, 34, 0, 22)
                 copyBtn.Position = UDim2.new(1, -76, 0, 6)
-                copyBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+                copyBtn.BackgroundColor3 = Theme.Element
                 copyBtn.Font = Enum.Font.GothamBold
                 copyBtn.Text = "Copy"
-                copyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+                copyBtn.TextColor3 = Theme.Text
                 copyBtn.TextSize = 8
                 copyBtn.Parent = itemFrame
 
@@ -1205,23 +1224,23 @@ SearchBox.FocusLost:Connect(function(enterPressed)
                 copyCorner.Parent = copyBtn
 
                 local copyStroke = Instance.new("UIStroke")
-                copyStroke.Color = Color3.fromRGB(255, 255, 255)
+                copyStroke.Color = Theme.Border
                 copyStroke.Parent = copyBtn
 
                 copyBtn.MouseButton1Click:Connect(function()
                     if setclipboard then
                         setclipboard(scriptData.script)
-                        ShowNotification("Copied source to clipboard", Color3.fromRGB(255, 255, 255))
+                        ShowNotification("Copied source to clipboard", Theme.Accent)
                     end
                 end)
 
                 local saveBtn = Instance.new("TextButton")
                 saveBtn.Size = UDim2.new(0, 34, 0, 22)
                 saveBtn.Position = UDim2.new(1, -38, 0, 6)
-                saveBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+                saveBtn.BackgroundColor3 = Theme.Element
                 saveBtn.Font = Enum.Font.GothamBold
                 saveBtn.Text = "Save"
-                saveBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+                saveBtn.TextColor3 = Theme.Text
                 saveBtn.TextSize = 8
                 saveBtn.Parent = itemFrame
 
@@ -1230,18 +1249,18 @@ SearchBox.FocusLost:Connect(function(enterPressed)
                 saveCorner.Parent = saveBtn
 
                 local saveStroke = Instance.new("UIStroke")
-                saveStroke.Color = Color3.fromRGB(255, 255, 255)
+                saveStroke.Color = Theme.Border
                 saveStroke.Parent = saveBtn
 
                 saveBtn.MouseButton1Click:Connect(function()
                     table.insert(SavedScriptsList, {name = scriptData.title or "Untitled", code = scriptData.script, locked = false})
                     SaveConfigsToFile()
                     RefreshSavedScripts()
-                    ShowNotification("Imported script to storage", Color3.fromRGB(255, 255, 255))
+                    ShowNotification("Imported script to storage", Theme.Accent)
                 end)
             end
             SearchScroll.CanvasSize = UDim2.new(0, 0, 0, SearchScrollLayout.AbsoluteContentSize.Y)
-            ShowNotification("Query completed successfully", Color3.fromRGB(255, 255, 255))
+            ShowNotification("Query completed successfully", Theme.Accent)
         end
     end)
 end)
@@ -1251,7 +1270,7 @@ local MiscScroll = Instance.new("ScrollingFrame")
 MiscScroll.Size = UDim2.new(1, 0, 1, 0)
 MiscScroll.BackgroundTransparency = 1
 MiscScroll.ScrollBarThickness = 3
-MiscScroll.ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255)
+MiscScroll.ScrollBarImageColor3 = Theme.Border
 MiscScroll.Parent = MiscPanel
 
 local MiscLayout = Instance.new("UIListLayout")
@@ -1261,10 +1280,10 @@ MiscLayout.Parent = MiscScroll
 local function CreateMiscButton(name, callback)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1, 0, 0, 32)
-    btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    btn.BackgroundColor3 = Theme.Container
     btn.Font = Enum.Font.GothamMedium
     btn.Text = name
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextColor3 = Theme.Text
     btn.TextSize = 9
     btn.Parent = MiscScroll
 
@@ -1273,19 +1292,19 @@ local function CreateMiscButton(name, callback)
     corner.Parent = btn
 
     local stroke = Instance.new("UIStroke")
-    stroke.Color = Color3.fromRGB(255, 255, 255)
+    stroke.Color = Theme.Border
     stroke.Parent = btn
 
     btn.MouseButton1Click:Connect(callback)
 end
 
 CreateMiscButton("Rejoin Server Instance", function()
-    ShowNotification("Rejoining current session...", Color3.fromRGB(255, 255, 255))
+    ShowNotification("Rejoining current session...", Theme.Accent)
     TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
 end)
 
 CreateMiscButton("Hop to Different Server", function()
-    ShowNotification("Scanning open servers...", Color3.fromRGB(255, 255, 255))
+    ShowNotification("Scanning open servers...", Theme.Accent)
     task.spawn(function()
         local success, servers = pcall(function()
             local req = request or syn.request or http_request
@@ -1313,10 +1332,10 @@ local isAntiAfkEnabled = false
 local function CreateMiscToggle(name, callback)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1, 0, 0, 32)
-    btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    btn.BackgroundColor3 = Theme.Container
     btn.Font = Enum.Font.GothamMedium
     btn.Text = name .. ": Inactive"
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextColor3 = Theme.Text
     btn.TextSize = 9
     btn.Parent = MiscScroll
 
@@ -1325,17 +1344,17 @@ local function CreateMiscToggle(name, callback)
     corner.Parent = btn
 
     local stroke = Instance.new("UIStroke")
-    stroke.Color = Color3.fromRGB(255, 255, 255)
+    stroke.Color = Theme.Border
     stroke.Parent = btn
 
     btn.MouseButton1Click:Connect(function()
         isAntiAfkEnabled = not isAntiAfkEnabled
         if isAntiAfkEnabled then
             btn.Text = name .. ": Active"
-            ShowNotification("Anti-AFK Protection Engaged", Color3.fromRGB(255, 255, 255))
+            ShowNotification("Anti-AFK Protection Engaged", Theme.Accent)
         else
             btn.Text = name .. ": Inactive"
-            ShowNotification("Anti-AFK Protection Disengaged", Color3.fromRGB(255, 255, 255))
+            ShowNotification("Anti-AFK Protection Disengaged", Theme.SubText)
         end
         callback(isAntiAfkEnabled, btn)
     end)
@@ -1356,7 +1375,7 @@ CreateMiscToggle("Anti AFK Guard", function(state)
 end)
 
 CreateMiscButton("Crazy FPS Boost (Ultra Optimization)", function()
-    ShowNotification("Executing Maximum FPS Optimization...", Color3.fromRGB(255, 255, 255))
+    ShowNotification("Executing Maximum FPS Optimization...", Theme.Accent)
     pcall(function()
         local Lighting = game:GetService("Lighting")
         local Terrain = workspace:FindFirstChildOfClass("Terrain")
@@ -1393,26 +1412,20 @@ CreateMiscButton("Crazy FPS Boost (Ultra Optimization)", function()
         end
 
         settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
-        pcall(function()
-            UserSettings():GetService("UserGameSettings").SavedQualityLevel = Enum.SavedQualityLevel.Level1
-            UserSettings():GetService("UserGameSettings").MasterVolume = 0.3
-            UserSettings():GetService("UserGameSettings").Fullscreen = true
-        end)
     end)
-    ShowNotification("Maximum FPS Boost Active!", Color3.fromRGB(255, 255, 255))
+    ShowNotification("Maximum FPS Boost Active!", Theme.Accent)
 end)
 
 CreateMiscButton("Copy ServerJob ID", function()
     if setclipboard then 
         setclipboard(game.JobId)
-        ShowNotification("Job ID copied to clipboard", Color3.fromRGB(255, 255, 255))
+        ShowNotification("Job ID copied to clipboard", Theme.Accent)
     end
 end)
 
--- JOIN SERVER BY JOB ID UI COMPONENT (Click to join feature)
 local JoinJobFrame = Instance.new("Frame")
 JoinJobFrame.Size = UDim2.new(1, 0, 0, 68)
-JoinJobFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+JoinJobFrame.BackgroundColor3 = Theme.Container
 JoinJobFrame.Parent = MiscScroll
 
 local JoinJobCorner = Instance.new("UICorner")
@@ -1420,18 +1433,18 @@ JoinJobCorner.CornerRadius = UDim.new(0, 8)
 JoinJobCorner.Parent = JoinJobFrame
 
 local JoinJobStroke = Instance.new("UIStroke")
-JoinJobStroke.Color = Color3.fromRGB(255, 255, 255)
+JoinJobStroke.Color = Theme.Border
 JoinJobStroke.Parent = JoinJobFrame
 
 local JobInputBox = Instance.new("TextBox")
 JobInputBox.Size = UDim2.new(1, -16, 0, 26)
 JobInputBox.Position = UDim2.new(0, 8, 0, 6)
-JobInputBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+JobInputBox.BackgroundColor3 = Theme.Element
 JobInputBox.Font = Enum.Font.GothamMedium
 JobInputBox.PlaceholderText = "Paste Job ID here..."
 JobInputBox.Text = ""
-JobInputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-JobInputBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+JobInputBox.TextColor3 = Theme.Text
+JobInputBox.PlaceholderColor3 = Theme.SubText
 JobInputBox.TextSize = 8
 JobInputBox.TextXAlignment = Enum.TextXAlignment.Left
 JobInputBox.Parent = JoinJobFrame
@@ -1441,16 +1454,16 @@ JobInputCorner.CornerRadius = UDim.new(0, 6)
 JobInputCorner.Parent = JobInputBox
 
 local JobInputStroke = Instance.new("UIStroke")
-JobInputStroke.Color = Color3.fromRGB(255, 255, 255)
+JobInputStroke.Color = Theme.Border
 JobInputStroke.Parent = JobInputBox
 
 local JoinJobBtn = Instance.new("TextButton")
 JoinJobBtn.Size = UDim2.new(1, -16, 0, 24)
 JoinJobBtn.Position = UDim2.new(0, 8, 0, 36)
-JoinJobBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+JoinJobBtn.BackgroundColor3 = Theme.Accent
 JoinJobBtn.Font = Enum.Font.GothamBold
 JoinJobBtn.Text = "Join Server by Job ID"
-JoinJobBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+JoinJobBtn.TextColor3 = Theme.Text
 JoinJobBtn.TextSize = 8
 JoinJobBtn.Parent = JoinJobFrame
 
@@ -1459,18 +1472,18 @@ JoinJobBtnCorner.CornerRadius = UDim.new(0, 6)
 JoinJobBtnCorner.Parent = JoinJobBtn
 
 local JoinJobBtnStroke = Instance.new("UIStroke")
-JoinJobBtnStroke.Color = Color3.fromRGB(255, 255, 255)
+JoinJobBtnStroke.Color = Theme.Border
 JoinJobBtnStroke.Parent = JoinJobBtn
 
 JoinJobBtn.MouseButton1Click:Connect(function()
     local jobIdText = JobInputBox.Text
     if jobIdText ~= "" then
-        ShowNotification("Teleporting to specified Job ID...", Color3.fromRGB(255, 255, 255))
+        ShowNotification("Teleporting to specified Job ID...", Theme.Accent)
         pcall(function()
             TeleportService:TeleportToPlaceInstance(game.PlaceId, jobIdText, LocalPlayer)
         end)
     else
-        ShowNotification("Please enter a valid Job ID first!", Color3.fromRGB(255, 255, 255))
+        ShowNotification("Please enter a valid Job ID first!", Color3.fromRGB(240, 100, 100))
     end
 end)
 
