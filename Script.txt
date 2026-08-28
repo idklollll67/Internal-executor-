@@ -225,7 +225,7 @@ CloseBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = false
 end)
 
--- RESET & LOCK/UNLOCK UI FUNCTIONALITY COMMANDS
+-- CHAT COMMANDS FUNCTIONALITY (INCLUDING TELEPORT TO PLAYER)
 local function ResetUIPosition()
     OpenCloseBtn.Position = UDim2.new(0, 18, 0.5, -22)
     MainFrame.Position = UDim2.new(0.5, -260, 0.5, -160)
@@ -234,17 +234,47 @@ local function ResetUIPosition()
 end
 
 LocalPlayer.Chatted:Connect(function(message)
-    local msg = message:lower()
-    if msg == "!reset" then
+    local args = {}
+    for word in message:gmatch("%S+") do
+        table.insert(args, word)
+    end
+    
+    local cmd = args[1] and args[1]:lower() or ""
+    
+    if cmd == "!reset" then
         ResetUIPosition()
-    elseif msg == "!lock" then
+    elseif cmd == "!lock" then
         isUiLocked = true
         OpenCloseStroke.Color = Color3.fromRGB(255, 90, 90)
         ShowNotification("UI Toggle has been locked!", Color3.fromRGB(240, 140, 140))
-    elseif msg == "!unlock" then
+    elseif cmd == "!unlock" then
         isUiLocked = false
         OpenCloseStroke.Color = Color3.fromRGB(65, 45, 95)
         ShowNotification("UI Toggle has been unlocked!", Color3.fromRGB(150, 230, 150))
+    elseif cmd == "!tpto" then
+        local targetName = args[2]
+        if not targetName then
+            ShowNotification("Usage: !tpto <player>", Color3.fromRGB(240, 140, 140))
+            return
+        end
+        
+        local foundPlayer = nil
+        for _, p in ipairs(Players:GetPlayers()) do
+            if p.Name:lower():sub(1, #targetName) == targetName:lower() or (p.DisplayName and p.DisplayName:lower():sub(1, #targetName) == targetName:lower()) then
+                foundPlayer = p
+                break
+            end
+        end
+        
+        if foundPlayer and foundPlayer.Character and foundPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local myRoot = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if myRoot then
+                myRoot.CFrame = foundPlayer.Character.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)
+                ShowNotification("Teleported to " .. foundPlayer.Name, Color3.fromRGB(150, 230, 150))
+            end
+        else
+            ShowNotification("Player not found or has no character!", Color3.fromRGB(240, 140, 140))
+        end
     end
 end)
 
@@ -352,10 +382,7 @@ local commandList = {
     {cmd = "!reset", status = "Active", desc = "Resets the UI positions and opens windows."},
     {cmd = "!lock", status = "Active", desc = "Locks the floating toggle button interaction."},
     {cmd = "!unlock", status = "Active", desc = "Unlocks the floating toggle button interaction."},
-    {cmd = "!kick <player>", status = "Upcoming", desc = "Forces targeted client disconnect from session."},
-    {cmd = "!tpto <player>", status = "Upcoming", desc = "Instantly teleports local character coordinates."},
-    {cmd = "!fly", status = "Upcoming", desc = "Enables fluid unconstrained noclip flight mode."},
-    {cmd = "!god", status = "Upcoming", desc = "Locks humanoid health state against damage events."}
+    {cmd = "!tpto <player>", status = "Active", desc = "Instantly teleports local character coordinates to target."}
 }
 
 for _, info in ipairs(commandList) do
@@ -373,7 +400,7 @@ for _, info in ipairs(commandList) do
     stroke.Parent = item
 
     local titleLbl = Instance.new("TextLabel")
-    titleLbl.Size = UDim2.new(0, 100, 0, 16)
+    titleLbl.Size = UDim2.new(0, 110, 0, 16)
     titleLbl.Position = UDim2.new(0, 8, 0, 4)
     titleLbl.BackgroundTransparency = 1
     titleLbl.Font = Enum.Font.GothamBold
