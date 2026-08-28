@@ -1,4 +1,4 @@
--- BSH Hub (Fixed Layout Bounds & Draggable Toggle UI)
+-- BSH Hub (Fixed Executor Menu Layout & Content Clipping)
 
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
@@ -26,24 +26,23 @@ ScreenGui.Parent = ParentGui
 
 -- NOTIFICATION SYSTEM
 local NotifContainer = Instance.new("Frame")
-NotifContainer.Size = UDim2.new(0, 200, 0, 150)
-NotifContainer.Position = UDim2.new(1, -220, 1, -230)
+NotifContainer.Size = UDim2.new(0, 220, 0, 250)
+NotifContainer.Position = UDim2.new(1, -230, 1, -260)
 NotifContainer.BackgroundTransparency = 1
 NotifContainer.Parent = ScreenGui
 
 local NotifLayout = Instance.new("UIListLayout")
 NotifLayout.SortOrder = Enum.SortOrder.LayoutOrder
 NotifLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
-NotifLayout.Padding = UDim.new(0, 5)
+NotifLayout.Padding = UDim.new(0, 6)
 NotifLayout.Parent = NotifContainer
 
 local function ShowNotification(message, color)
     task.spawn(function()
         local notif = Instance.new("Frame")
-        notif.Size = UDim2.new(1, 0, 0, 28)
+        notif.Size = UDim2.new(1, 0, 0, 32)
         notif.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
         notif.BackgroundTransparency = 1
-        notif.Position = UDim2.new(0, 20, 0, 0)
         notif.Parent = NotifContainer
 
         local corner = Instance.new("UICorner")
@@ -57,8 +56,8 @@ local function ShowNotification(message, color)
         indicator.Parent = notif
 
         local label = Instance.new("TextLabel")
-        label.Size = UDim2.new(1, -10, 1, 0)
-        label.Position = UDim2.new(0, 8, 0, 0)
+        label.Size = UDim2.new(1, -12, 1, 0)
+        label.Position = UDim2.new(0, 10, 0, 0)
         label.BackgroundTransparency = 1
         label.Font = Enum.Font.GothamMedium
         label.Text = message
@@ -68,11 +67,11 @@ local function ShowNotification(message, color)
         label.Parent = notif
 
         local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-        game:GetService("TweenService"):Create(notif, tweenInfo, {BackgroundTransparency = 0.1, Position = UDim2.new(0, 0, 0, 0)}):Play()
+        game:GetService("TweenService"):Create(notif, tweenInfo, {BackgroundTransparency = 0.1}):Play()
 
         task.wait(2.5)
 
-        local fadeOut = game:GetService("TweenService"):Create(notif, tweenInfo, {BackgroundTransparency = 1, Position = UDim2.new(0, 20, 0, 0)})
+        local fadeOut = game:GetService("TweenService"):Create(notif, tweenInfo, {BackgroundTransparency = 1})
         fadeOut:Play()
         fadeOut.Completed:Connect(function()
             notif:Destroy()
@@ -422,7 +421,7 @@ CancelCorner.Parent = CancelModalBtn
 UploadBtn.MouseButton1Click:Connect(function() ModalBg.Visible = true end)
 CancelModalBtn.MouseButton1Click:Connect(function() ModalBg.Visible = false end)
 
--- FIXED EXEC PANEL BOUNDS (Preventing buttons and text overlap)
+-- FIXED EXEC PANEL BOUNDS (Preventing buttons overlapping text box contents)
 local ExecBoxInstance = Instance.new("TextBox")
 ExecBoxInstance.Name = "ExecBox"
 ExecBoxInstance.Size = UDim2.new(1, 0, 1, -38)
