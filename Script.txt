@@ -325,15 +325,8 @@ CreateNavButton("EXEC", ExecPanel, false, false)
 CreateNavButton("SEARCH", SearchPanel, false, false)
 CreateNavButton("MISC", MiscPanel, false, false)
 CreateNavButton("AI MENU", AiPanel, false, true)
-CreateNavButton("CMDS", CommandsPanel, false, false)
 
-if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
-    CreateNavButton("ADMIN", AdminPanel, true, false)
-end
-
-NavContainer.CanvasSize = UDim2.new(0, 0, 0, NavLayout.AbsoluteContentSize.Y + 10)
-
--- COMMANDS PANEL SETUP
+-- COMMANDS PANEL SETUP (Placed precisely above Admin)
 local CommandsTitle = Instance.new("TextLabel")
 CommandsTitle.Size = UDim2.new(1, 0, 0, 18)
 CommandsTitle.BackgroundTransparency = 1
@@ -414,6 +407,14 @@ for _, info in ipairs(commandList) do
 end
 
 CommandsScroll.CanvasSize = UDim2.new(0, 0, 0, CommandsLayout.AbsoluteContentSize.Y)
+
+CreateNavButton("CMDS", CommandsPanel, false, false)
+
+if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
+    CreateNavButton("ADMIN", AdminPanel, true, false)
+end
+
+NavContainer.CanvasSize = UDim2.new(0, 0, 0, NavLayout.AbsoluteContentSize.Y + 10)
 
 local UserFileName = ConfigFolderName .. "/" .. LocalPlayer.Name .. "_SavedScripts.json"
 local GlobalForcedFile = ConfigFolderName .. "/ForcedLockedScripts.json"
