@@ -1,9 +1,10 @@
--- BSH Hub (Fully Fixed Executor State, Toggle, and Overlap Issues)
+-- BSH Hub (Fixed Layout Bounds & Draggable Toggle UI)
 
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
 local VirtualUser = game:GetService("VirtualUser")
+local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 
 local ConfigFolderName = "BSHHub_Configs"
@@ -79,15 +80,15 @@ local function ShowNotification(message, color)
     end)
 end
 
--- OPEN/CLOSE TOGGLE BUTTON
+-- OPEN/CLOSE FLOATING X TOGGLE BUTTON (DRAGGABLE)
 local OpenCloseBtn = Instance.new("TextButton")
 OpenCloseBtn.Size = UDim2.new(0, 36, 0, 36)
 OpenCloseBtn.Position = UDim2.new(0, 12, 0.5, -18)
 OpenCloseBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 OpenCloseBtn.Font = Enum.Font.GothamBold
-OpenCloseBtn.Text = "BSH"
-OpenCloseBtn.TextColor3 = Color3.fromRGB(220, 220, 230)
-OpenCloseBtn.TextSize = 9
+OpenCloseBtn.Text = "X"
+OpenCloseBtn.TextColor3 = Color3.fromRGB(220, 160, 160)
+OpenCloseBtn.TextSize = 12
 OpenCloseBtn.ZIndex = 10
 OpenCloseBtn.Parent = ScreenGui
 
@@ -106,6 +107,34 @@ MainFrame.Parent = ScreenGui
 
 OpenCloseBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = not MainFrame.Visible
+end)
+
+-- Make Floating Toggle Button Draggable for Mobile/PC
+local dragging, dragInput, dragStart, startPos
+OpenCloseBtn.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = OpenCloseBtn.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+OpenCloseBtn.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        OpenCloseBtn.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
 end)
 
 local MainCorner = Instance.new("UICorner")
@@ -393,9 +422,10 @@ CancelCorner.Parent = CancelModalBtn
 UploadBtn.MouseButton1Click:Connect(function() ModalBg.Visible = true end)
 CancelModalBtn.MouseButton1Click:Connect(function() ModalBg.Visible = false end)
 
+-- FIXED EXEC PANEL BOUNDS (Preventing buttons and text overlap)
 local ExecBoxInstance = Instance.new("TextBox")
 ExecBoxInstance.Name = "ExecBox"
-ExecBoxInstance.Size = UDim2.new(1, 0, 1, -34)
+ExecBoxInstance.Size = UDim2.new(1, 0, 1, -38)
 ExecBoxInstance.Position = UDim2.new(0, 0, 0, 0)
 ExecBoxInstance.BackgroundColor3 = Color3.fromRGB(12, 12, 15)
 ExecBoxInstance.Font = Enum.Font.Code
