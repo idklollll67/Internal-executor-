@@ -1,4 +1,4 @@
--- Internal Hub (Delta-Style Right-Sided Layout & AI Assistant Module + Working Chat Lock/Unlock)
+-- Internal Hub (Delta-Style Right-Sided Layout & AI Assistant Module + Working Chat Lock/Unlock + CMDS Directory)
 
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
@@ -285,6 +285,7 @@ local ExecPanel = CreatePanel()
 local SearchPanel = CreatePanel()
 local MiscPanel = CreatePanel()
 local AiPanel = CreatePanel()
+local CommandsPanel = CreatePanel()
 local AdminPanel = CreatePanel()
 
 SavedPanel.Visible = true
@@ -313,6 +314,7 @@ local function CreateNavButton(name, panel, isSpecial, isAI)
         SearchPanel.Visible = false
         MiscPanel.Visible = false
         AiPanel.Visible = false
+        CommandsPanel.Visible = false
         if AdminPanel then AdminPanel.Visible = false end
         panel.Visible = true
     end)
@@ -323,12 +325,95 @@ CreateNavButton("EXEC", ExecPanel, false, false)
 CreateNavButton("SEARCH", SearchPanel, false, false)
 CreateNavButton("MISC", MiscPanel, false, false)
 CreateNavButton("AI MENU", AiPanel, false, true)
+CreateNavButton("CMDS", CommandsPanel, false, false)
 
 if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
     CreateNavButton("ADMIN", AdminPanel, true, false)
 end
 
 NavContainer.CanvasSize = UDim2.new(0, 0, 0, NavLayout.AbsoluteContentSize.Y + 10)
+
+-- COMMANDS PANEL SETUP
+local CommandsTitle = Instance.new("TextLabel")
+CommandsTitle.Size = UDim2.new(1, 0, 0, 18)
+CommandsTitle.BackgroundTransparency = 1
+CommandsTitle.Font = Enum.Font.GothamBold
+CommandsTitle.Text = "-- SYSTEM COMMANDS DIRECTORY --"
+CommandsTitle.TextColor3 = Color3.fromRGB(150, 200, 255)
+CommandsTitle.TextSize = 9
+CommandsTitle.Parent = CommandsPanel
+
+local CommandsScroll = Instance.new("ScrollingFrame")
+CommandsScroll.Size = UDim2.new(1, 0, 1, -24)
+CommandsScroll.Position = UDim2.new(0, 0, 0, 24)
+CommandsScroll.BackgroundTransparency = 1
+CommandsScroll.ScrollBarThickness = 3
+CommandsScroll.ScrollBarImageColor3 = Color3.fromRGB(90, 70, 140)
+CommandsScroll.Parent = CommandsPanel
+
+local CommandsLayout = Instance.new("UIListLayout")
+CommandsLayout.Padding = UDim.new(0, 5)
+CommandsLayout.Parent = CommandsScroll
+
+local commandList = {
+    {cmd = "!reset", status = "Active", desc = "Resets the UI positions and opens windows."},
+    {cmd = "!lock", status = "Active", desc = "Locks the floating toggle button interaction."},
+    {cmd = "!unlock", status = "Active", desc = "Unlocks the floating toggle button interaction."},
+    {cmd = "!kick <player>", status = "Upcoming", desc = "Forces targeted client disconnect from session."},
+    {cmd = "!tpto <player>", status = "Upcoming", desc = "Instantly teleports local character coordinates."},
+    {cmd = "!fly", status = "Upcoming", desc = "Enables fluid unconstrained noclip flight mode."},
+    {cmd = "!god", status = "Upcoming", desc = "Locks humanoid health state against damage events."}
+}
+
+for _, info in ipairs(commandList) do
+    local item = Instance.new("Frame")
+    item.Size = UDim2.new(1, 0, 0, 36)
+    item.BackgroundColor3 = Color3.fromRGB(16, 14, 22)
+    item.Parent = CommandsScroll
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = item
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(35, 30, 48)
+    stroke.Parent = item
+
+    local titleLbl = Instance.new("TextLabel")
+    titleLbl.Size = UDim2.new(0, 100, 0, 16)
+    titleLbl.Position = UDim2.new(0, 8, 0, 4)
+    titleLbl.BackgroundTransparency = 1
+    titleLbl.Font = Enum.Font.GothamBold
+    titleLbl.Text = info.cmd
+    titleLbl.TextColor3 = info.status == "Active" and Color3.fromRGB(150, 230, 150) or Color3.fromRGB(225, 180, 120)
+    titleLbl.TextSize = 9
+    titleLbl.TextXAlignment = Enum.TextXAlignment.Left
+    titleLbl.Parent = item
+
+    local statusLbl = Instance.new("TextLabel")
+    statusLbl.Size = UDim2.new(0, 60, 0, 16)
+    statusLbl.Position = UDim2.new(1, -68, 0, 4)
+    statusLbl.BackgroundTransparency = 1
+    statusLbl.Font = Enum.Font.GothamMedium
+    statusLbl.Text = "[" .. info.status .. "]"
+    statusLbl.TextColor3 = info.status == "Active" and Color3.fromRGB(100, 180, 100) or Color3.fromRGB(180, 130, 80)
+    statusLbl.TextSize = 8
+    statusLbl.TextXAlignment = Enum.TextXAlignment.Right
+    statusLbl.Parent = item
+
+    local descLbl = Instance.new("TextLabel")
+    descLbl.Size = UDim2.new(1, -16, 0, 12)
+    descLbl.Position = UDim2.new(0, 8, 0, 20)
+    descLbl.BackgroundTransparency = 1
+    descLbl.Font = Enum.Font.GothamMedium
+    descLbl.Text = info.desc
+    descLbl.TextColor3 = Color3.fromRGB(160, 155, 180)
+    descLbl.TextSize = 8
+    descLbl.TextXAlignment = Enum.TextXAlignment.Left
+    descLbl.Parent = item
+end
+
+CommandsScroll.CanvasSize = UDim2.new(0, 0, 0, CommandsLayout.AbsoluteContentSize.Y)
 
 local UserFileName = ConfigFolderName .. "/" .. LocalPlayer.Name .. "_SavedScripts.json"
 local GlobalForcedFile = ConfigFolderName .. "/ForcedLockedScripts.json"
