@@ -1,4 +1,4 @@
--- BSH Hub (Updated with Custom getcustomasset Background and Toggle)
+-- BSH Hub (Updated with exact custom assets via getcustomasset & correct sizing)
 
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
@@ -12,7 +12,7 @@ pcall(function()
     if not isfolder(ConfigFolderName) then makefolder(ConfigFolderName) end
 end)
 
--- Download custom assets via getcustomasset
+-- Download custom asset files
 local bgPath = ConfigFolderName .. "/BSH_Background.png"
 local togglePath = ConfigFolderName .. "/BSH_Toggle.png"
 
@@ -98,13 +98,14 @@ local function ShowNotification(message, color)
     end)
 end
 
--- MAIN FRAME WITH CUSTOM IMAGE BACKGROUND
+-- MAIN FRAME (Size correctly scaled to 440x300 with custom asset, no old Roblox ID strings)
 local MainFrame = Instance.new("ImageLabel")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 440, 0, 300)
 MainFrame.Position = UDim2.new(0.5, -240, 0.5, -150)
 MainFrame.BackgroundTransparency = 1
 MainFrame.Image = bgAsset
+MainFrame.ScaleType = Enum.ScaleType.Stretch
 MainFrame.BorderSizePixel = 0
 MainFrame.Parent = ScreenGui
 
@@ -112,12 +113,13 @@ local MainCorner = Instance.new("UICorner")
 MainCorner.CornerRadius = UDim.new(0, 6)
 MainCorner.Parent = MainFrame
 
--- OPEN/CLOSE TOGGLE BUTTON WITH CUSTOM IMAGE
+-- OPEN/CLOSE TOGGLE BUTTON (Size correctly set to 36x36 with custom asset)
 local OpenCloseBtn = Instance.new("ImageButton")
 OpenCloseBtn.Size = UDim2.new(0, 36, 0, 36)
 OpenCloseBtn.Position = UDim2.new(0, 12, 0.5, -18)
 OpenCloseBtn.BackgroundTransparency = 1
 OpenCloseBtn.Image = toggleAsset
+OpenCloseBtn.ScaleType = Enum.ScaleType.Stretch
 OpenCloseBtn.Parent = ScreenGui
 
 OpenCloseBtn.MouseButton1Click:Connect(function()
