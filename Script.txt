@@ -1,4 +1,4 @@
--- Internal Hub (Fixed Color Contrast, Extra Compact User Profile, Cleaned Topbar)
+-- Internal Hub (Fixed Color Contrast, Extra Compact User Profile, Secured Admin Scripts)
 
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
@@ -274,7 +274,7 @@ LocalPlayer.Chatted:Connect(function(message)
     end
 end)
 
--- LEFT-SIDE NAVIGATION CONTAINER (adjusted to clear the micro profile block)
+-- LEFT-SIDE NAVIGATION CONTAINER
 local NavContainer = Instance.new("ScrollingFrame")
 NavContainer.Size = UDim2.new(0, 96, 1, -84)
 NavContainer.Position = UDim2.new(0, 0, 0, 45)
@@ -680,7 +680,7 @@ RefreshSavedScripts = function()
         itemStroke.Parent = itemFrame
 
         local label = Instance.new("TextLabel")
-        label.Size = UDim2.new(0, 110, 1, 0)
+        label.Size = UDim2.new(0, scriptData.locked and 180 or 110, 1, 0)
         label.Position = UDim2.new(0, 12, 0, 0)
         label.BackgroundTransparency = 1
         label.Font = Enum.Font.GothamMedium
@@ -692,7 +692,7 @@ RefreshSavedScripts = function()
 
         local runBtn = Instance.new("TextButton")
         runBtn.Size = UDim2.new(0, 34, 0, 22)
-        runBtn.Position = UDim2.new(1, -114, 0, 6)
+        runBtn.Position = UDim2.new(1, scriptData.locked and -38 or -114, 0, 6)
         runBtn.BackgroundColor3 = Theme.Element
         runBtn.Font = Enum.Font.GothamBold
         runBtn.Text = "Run"
@@ -716,60 +716,58 @@ RefreshSavedScripts = function()
             ShowNotification("Executed: " .. scriptData.name, Theme.Accent)
         end)
 
-        local editBtn = Instance.new("TextButton")
-        editBtn.Size = UDim2.new(0, 34, 0, 22)
-        editBtn.Position = UDim2.new(1, -76, 0, 6)
-        editBtn.BackgroundColor3 = Theme.Element
-        editBtn.Font = Enum.Font.GothamBold
-        editBtn.Text = "Edit"
-        editBtn.TextColor3 = Theme.Text
-        editBtn.TextSize = 8
-        editBtn.Parent = itemFrame
+        -- Edit and Delete controls are omitted/hidden for locked/admin-forced scripts
+        if not scriptData.locked then
+            local editBtn = Instance.new("TextButton")
+            editBtn.Size = UDim2.new(0, 34, 0, 22)
+            editBtn.Position = UDim2.new(1, -76, 0, 6)
+            editBtn.BackgroundColor3 = Theme.Element
+            editBtn.Font = Enum.Font.GothamBold
+            editBtn.Text = "Edit"
+            editBtn.TextColor3 = Theme.Text
+            editBtn.TextSize = 8
+            editBtn.Parent = itemFrame
 
-        local editCorner = Instance.new("UICorner")
-        editCorner.CornerRadius = UDim.new(0, 6)
-        editCorner.Parent = editBtn
+            local editCorner = Instance.new("UICorner")
+            editCorner.CornerRadius = UDim.new(0, 6)
+            editCorner.Parent = editBtn
 
-        local editStroke = Instance.new("UIStroke")
-        editStroke.Color = Theme.Border
-        editStroke.Parent = editBtn
+            local editStroke = Instance.new("UIStroke")
+            editStroke.Color = Theme.Border
+            editStroke.Parent = editBtn
 
-        editBtn.MouseButton1Click:Connect(function()
-            ExecBoxInstance.Text = scriptData.code
-            SavedPanel.Visible = false
-            ExecPanel.Visible = true
-            ShowNotification("Loaded script into editor", Theme.Accent)
-        end)
+            editBtn.MouseButton1Click:Connect(function()
+                ExecBoxInstance.Text = scriptData.code
+                SavedPanel.Visible = false
+                ExecPanel.Visible = true
+                ShowNotification("Loaded script into editor", Theme.Accent)
+            end)
 
-        local delBtn = Instance.new("TextButton")
-        delBtn.Size = UDim2.new(0, 34, 0, 22)
-        delBtn.Position = UDim2.new(1, -38, 0, 6)
-        delBtn.BackgroundColor3 = Theme.Element
-        delBtn.Font = Enum.Font.GothamBold
-        delBtn.Text = scriptData.locked and "Lock" or "Del"
-        delBtn.TextColor3 = Theme.SubText
-        delBtn.TextSize = 8
-        delBtn.Parent = itemFrame
+            local delBtn = Instance.new("TextButton")
+            delBtn.Size = UDim2.new(0, 34, 0, 22)
+            delBtn.Position = UDim2.new(1, -38, 0, 6)
+            delBtn.BackgroundColor3 = Theme.Element
+            delBtn.Font = Enum.Font.GothamBold
+            delBtn.Text = "Del"
+            delBtn.TextColor3 = Theme.SubText
+            delBtn.TextSize = 8
+            delBtn.Parent = itemFrame
 
-        local delCorner = Instance.new("UICorner")
-        delCorner.CornerRadius = UDim.new(0, 6)
-        delCorner.Parent = delBtn
+            local delCorner = Instance.new("UICorner")
+            delCorner.CornerRadius = UDim.new(0, 6)
+            delCorner.Parent = delBtn
 
-        local delStroke = Instance.new("UIStroke")
-        delStroke.Color = Theme.Border
-        delStroke.Parent = delBtn
+            local delStroke = Instance.new("UIStroke")
+            delStroke.Color = Theme.Border
+            delStroke.Parent = delBtn
 
-        delBtn.MouseButton1Click:Connect(function()
-            if scriptData.locked and LocalPlayer.Name ~= "dontaskmekdkdkdkkd" then
-                ShowNotification("Cannot delete a secured entry!", Color3.fromRGB(240, 100, 100))
-                return
-            end
-            
-            table.remove(SavedScriptsList, index)
-            SaveConfigsToFile()
-            RefreshSavedScripts()
-            ShowNotification("Removed item from library", Theme.SubText)
-        end)
+            delBtn.MouseButton1Click:Connect(function()
+                table.remove(SavedScriptsList, index)
+                SaveConfigsToFile()
+                RefreshSavedScripts()
+                ShowNotification("Removed item from library", Theme.SubText)
+            end)
+        end
     end
     ScriptScroll.CanvasSize = UDim2.new(0, 0, 0, ScrollLayout.AbsoluteContentSize.Y)
 end
