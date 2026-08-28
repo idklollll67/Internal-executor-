@@ -1,4 +1,4 @@
--- Internal Hub (Fixed Color Contrast, Compact User Profile, Cleaned Topbar)
+-- Internal Hub (Fixed Color Contrast, Extra Compact User Profile, Cleaned Topbar)
 
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
@@ -179,7 +179,7 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
--- TOPBAR TITLE (Settings, Discord, Source buttons removed cleanly)
+-- TOPBAR TITLE
 local TopBar = Instance.new("Frame")
 TopBar.Size = UDim2.new(1, 0, 0, 42)
 TopBar.BackgroundColor3 = Theme.Sidebar
@@ -274,9 +274,9 @@ LocalPlayer.Chatted:Connect(function(message)
     end
 end)
 
--- LEFT-SIDE NAVIGATION CONTAINER (adjusted height to accommodate smaller profile block)
+-- LEFT-SIDE NAVIGATION CONTAINER (adjusted to clear the micro profile block)
 local NavContainer = Instance.new("ScrollingFrame")
-NavContainer.Size = UDim2.new(0, 96, 1, -96)
+NavContainer.Size = UDim2.new(0, 96, 1, -84)
 NavContainer.Position = UDim2.new(0, 0, 0, 45)
 NavContainer.BackgroundColor3 = Theme.Sidebar
 NavContainer.BorderSizePixel = 0
@@ -287,18 +287,18 @@ local NavLayout = Instance.new("UIListLayout")
 NavLayout.FillDirection = Enum.FillDirection.Vertical
 NavLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 NavLayout.VerticalAlignment = Enum.VerticalAlignment.Top
-NavLayout.Padding = UDim.new(0, 6)
+NavLayout.Padding = UDim.new(0, 5)
 NavLayout.Parent = NavContainer
 
--- COMPACT USER PROFILE SECTION (Pinned at bottom of sidebar showing avatar & name)
+-- MINIMALIST MICRO USER PROFILE SECTION (32px height, 20px avatar, tiny text)
 local UserProfileFrame = Instance.new("Frame")
-UserProfileFrame.Size = UDim2.new(0, 84, 0, 44)
-UserProfileFrame.Position = UDim2.new(0, 6, 1, -49)
+UserProfileFrame.Size = UDim2.new(0, 84, 0, 32)
+UserProfileFrame.Position = UDim2.new(0, 6, 1, -37)
 UserProfileFrame.BackgroundColor3 = Theme.Element
 UserProfileFrame.Parent = MainFrame
 
 local UserProfileCorner = Instance.new("UICorner")
-UserProfileCorner.CornerRadius = UDim.new(0, 8)
+UserProfileCorner.CornerRadius = UDim.new(0, 6)
 UserProfileCorner.Parent = UserProfileFrame
 
 local UserProfileStroke = Instance.new("UIStroke")
@@ -306,8 +306,8 @@ UserProfileStroke.Color = Theme.Border
 UserProfileStroke.Parent = UserProfileFrame
 
 local AvatarThumb = Instance.new("ImageLabel")
-AvatarThumb.Size = UDim2.new(0, 24, 0, 24)
-AvatarThumb.Position = UDim2.new(0, 6, 0.5, -12)
+AvatarThumb.Size = UDim2.new(0, 20, 0, 20)
+AvatarThumb.Position = UDim2.new(0, 5, 0.5, -10)
 AvatarThumb.BackgroundTransparency = 1
 AvatarThumb.Image = Players:GetUserThumbnailAsync(LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
 AvatarThumb.Parent = UserProfileFrame
@@ -317,18 +317,18 @@ AvatarCorner.CornerRadius = UDim.new(1, 0)
 AvatarCorner.Parent = AvatarThumb
 
 local UserNameLabel = Instance.new("TextLabel")
-UserNameLabel.Size = UDim2.new(1, -36, 1, 0)
-UserNameLabel.Position = UDim2.new(0, 32, 0, 0)
+UserNameLabel.Size = UDim2.new(1, -29, 1, 0)
+UserNameLabel.Position = UDim2.new(0, 27, 0, 0)
 UserNameLabel.BackgroundTransparency = 1
 UserNameLabel.Font = Enum.Font.GothamBold
 UserNameLabel.Text = LocalPlayer.Name
 UserNameLabel.TextColor3 = Theme.Text
-UserNameLabel.TextSize = 8
+UserNameLabel.TextSize = 7
 UserNameLabel.TextTruncate = Enum.TextTruncate.AtEnd
 UserNameLabel.TextXAlignment = Enum.TextXAlignment.Left
 UserNameLabel.Parent = UserProfileFrame
 
--- CONTENT CONTAINER (Fixed sizing and positioning to prevent overlap with Sidebar)
+-- CONTENT CONTAINER
 local ContentContainer = Instance.new("Frame")
 ContentContainer.Size = UDim2.new(1, -108, 1, -56)
 ContentContainer.Position = UDim2.new(0, 102, 0, 50)
@@ -356,7 +356,7 @@ SavedPanel.Visible = true
 
 local function CreateNavButton(nameText, panel)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 84, 0, 28)
+    btn.Size = UDim2.new(0, 84, 0, 26)
     btn.BackgroundColor3 = Theme.Element
     btn.Font = Enum.Font.GothamBold
     btn.Text = nameText
