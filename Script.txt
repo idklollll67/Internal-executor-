@@ -682,7 +682,6 @@ RefreshSavedScripts = function()
         local isAdmin = (LocalPlayer.Name == "dontaskmekdkdkdkkd")
 
         local label = Instance.new("TextLabel")
-        -- Adjust label sizing based on buttons shown
         local labelWidth
         if not scriptData.locked then
             labelWidth = 110 -- Run, Edit, Del
@@ -736,7 +735,6 @@ RefreshSavedScripts = function()
             ShowNotification("Executed: " .. scriptData.name, Theme.Accent)
         end)
 
-        -- If script is locked: allow deletion ONLY if the user is the admin
         if scriptData.locked then
             if isAdmin then
                 local delBtn = Instance.new("TextButton")
@@ -768,14 +766,20 @@ RefreshSavedScripts = function()
                         end
                     end
 
-                    table.remove(SavedScriptsList, index)
+                    for sIndex, sItem in ipairs(SavedScriptsList) do
+                        if sItem.name == scriptData.name and sItem.code == scriptData.code then
+                            table.remove(SavedScriptsList, sIndex)
+                            break
+                        end
+                    end
+
                     SaveConfigsToFile()
                     RefreshSavedScripts()
+                    if AdminRefreshList then AdminRefreshList() end
                     ShowNotification("Removed forced global script", Theme.SubText)
                 end)
             end
         else
-            -- Standard editable items: everyone can edit and delete regular/imported scripts
             local editBtn = Instance.new("TextButton")
             editBtn.Size = UDim2.new(0, 34, 0, 22)
             editBtn.Position = UDim2.new(1, -76, 0, 6)
@@ -979,6 +983,17 @@ end)
 
 -- ADMIN PANEL
 if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
+    local AdminScroll = Instance.new("ScrollingFrame")
+    AdminScroll.Size = UDim2.new(1, 0, 1, 0)
+    AdminScroll.BackgroundTransparency = 1
+    AdminScroll.ScrollBarThickness = 3
+    AdminScroll.ScrollBarImageColor3 = Theme.Border
+    AdminScroll.Parent = AdminPanel
+
+    local AdminScrollLayout = Instance.new("UIListLayout")
+    AdminScrollLayout.Padding = UDim.new(0, 6)
+    AdminScrollLayout.Parent = AdminScroll
+
     local AdminTitle = Instance.new("TextLabel")
     AdminTitle.Size = UDim2.new(1, 0, 0, 18)
     AdminTitle.BackgroundTransparency = 1
@@ -986,11 +1001,10 @@ if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
     AdminTitle.Text = "-- RESTRICTED ADMIN INTERFACE --"
     AdminTitle.TextColor3 = Theme.Text
     AdminTitle.TextSize = 9
-    AdminTitle.Parent = AdminPanel
+    AdminTitle.Parent = AdminScroll
 
     local ForceNameInput = Instance.new("TextBox")
     ForceNameInput.Size = UDim2.new(1, 0, 0, 30)
-    ForceNameInput.Position = UDim2.new(0, 0, 0, 22)
     ForceNameInput.BackgroundColor3 = Theme.Container
     ForceNameInput.Font = Enum.Font.GothamMedium
     ForceNameInput.PlaceholderText = "Forced Script Title..."
@@ -998,7 +1012,7 @@ if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
     ForceNameInput.TextColor3 = Theme.Text
     ForceNameInput.PlaceholderColor3 = Theme.SubText
     ForceNameInput.TextSize = 9
-    ForceNameInput.Parent = AdminPanel
+    ForceNameInput.Parent = AdminScroll
 
     local ForceNameCorner = Instance.new("UICorner")
     ForceNameCorner.CornerRadius = UDim.new(0, 8)
@@ -1009,8 +1023,7 @@ if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
     ForceNameStroke.Parent = ForceNameInput
 
     local ForceCodeInput = Instance.new("TextBox")
-    ForceCodeInput.Size = UDim2.new(1, 0, 0, 85)
-    ForceCodeInput.Position = UDim2.new(0, 0, 0, 58)
+    ForceCodeInput.Size = UDim2.new(1, 0, 0, 75)
     ForceCodeInput.BackgroundColor3 = Theme.Container
     ForceCodeInput.Font = Enum.Font.Code
     ForceCodeInput.MultiLine = true
@@ -1021,7 +1034,7 @@ if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
     ForceCodeInput.TextSize = 8
     ForceCodeInput.TextXAlignment = Enum.TextXAlignment.Left
     ForceCodeInput.TextYAlignment = Enum.TextYAlignment.Top
-    ForceCodeInput.Parent = AdminPanel
+    ForceCodeInput.Parent = AdminScroll
 
     local ForceCodeCorner = Instance.new("UICorner")
     ForceCodeCorner.CornerRadius = UDim.new(0, 8)
@@ -1033,13 +1046,12 @@ if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
 
     local ForceBtn = Instance.new("TextButton")
     ForceBtn.Size = UDim2.new(1, 0, 0, 30)
-    ForceBtn.Position = UDim2.new(0, 0, 1, -30)
     ForceBtn.BackgroundColor3 = Theme.Accent
     ForceBtn.Font = Enum.Font.GothamBold
     ForceBtn.Text = "Deploy Global Forced Script"
     ForceBtn.TextColor3 = Theme.Text
     ForceBtn.TextSize = 9
-    ForceBtn.Parent = AdminPanel
+    ForceBtn.Parent = AdminScroll
 
     local ForceBtnCorner = Instance.new("UICorner")
     ForceBtnCorner.CornerRadius = UDim.new(0, 8)
@@ -1048,6 +1060,96 @@ if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
     local ForceBtnStroke = Instance.new("UIStroke")
     ForceBtnStroke.Color = Theme.Border
     ForceBtnStroke.Parent = ForceBtn
+
+    local ListHeader = Instance.new("TextLabel")
+    ListHeader.Size = UDim2.new(1, 0, 0, 20)
+    ListHeader.BackgroundTransparency = 1
+    ListHeader.Font = Enum.Font.GothamBold
+    ListHeader.Text = "-- CURRENTLY FORCED GLOBAL SCRIPTS --"
+    ListHeader.TextColor3 = Theme.SubText
+    ListHeader.TextSize = 8
+    ListHeader.TextXAlignment = Enum.TextXAlignment.Left
+    ListHeader.Parent = AdminScroll
+
+    local ForcedListContainer = Instance.new("Frame")
+    ForcedListContainer.Size = UDim2.new(1, 0, 0, 110)
+    ForcedListContainer.BackgroundTransparency = 1
+    ForcedListContainer.Parent = AdminScroll
+
+    local ForcedListLayout = Instance.new("UIListLayout")
+    ForcedListLayout.Padding = UDim.new(0, 4)
+    ForcedListLayout.Parent = ForcedListContainer
+
+    AdminRefreshList = function()
+        for _, child in ipairs(ForcedListContainer:GetChildren()) do
+            if child:IsA("Frame") then child:Destroy() end
+        end
+
+        for fIndex, fItem in ipairs(ForcedLockedList) do
+            local itemRow = Instance.new("Frame")
+            itemRow.Size = UDim2.new(1, 0, 0, 28)
+            itemRow.BackgroundColor3 = Theme.Container
+            itemRow.Parent = ForcedListContainer
+
+            local rowCorner = Instance.new("UICorner")
+            rowCorner.CornerRadius = UDim.new(0, 6)
+            rowCorner.Parent = itemRow
+
+            local rowStroke = Instance.new("UIStroke")
+            rowStroke.Color = Theme.Border
+            rowStroke.Parent = itemRow
+
+            local titleLbl = Instance.new("TextLabel")
+            titleLbl.Size = UDim2.new(1, -50, 1, 0)
+            titleLbl.Position = UDim2.new(0, 8, 0, 0)
+            titleLbl.BackgroundTransparency = 1
+            titleLbl.Font = Enum.Font.GothamMedium
+            titleLbl.Text = fItem.name
+            titleLbl.TextColor3 = Theme.Text
+            titleLbl.TextSize = 8
+            titleLbl.TextXAlignment = Enum.TextXAlignment.Left
+            titleLbl.Parent = itemRow
+
+            local removeGlobalBtn = Instance.new("TextButton")
+            removeGlobalBtn.Size = UDim2.new(0, 36, 0, 20)
+            removeGlobalBtn.Position = UDim2.new(1, -40, 0, 4)
+            removeGlobalBtn.BackgroundColor3 = Theme.Element
+            removeGlobalBtn.Font = Enum.Font.GothamBold
+            removeGlobalBtn.Text = "Remove"
+            removeGlobalBtn.TextColor3 = Color3.fromRGB(240, 100, 100)
+            removeGlobalBtn.TextSize = 7
+            removeGlobalBtn.Parent = itemRow
+
+            local remCorner = Instance.new("UICorner")
+            remCorner.CornerRadius = UDim.new(0, 4)
+            remCorner.Parent = removeGlobalBtn
+
+            local remStroke = Instance.new("UIStroke")
+            remStroke.Color = Theme.Border
+            remStroke.Parent = removeGlobalBtn
+
+            removeGlobalBtn.MouseButton1Click:Connect(function()
+                table.remove(ForcedLockedList, fIndex)
+                pcall(function()
+                    writefile(GlobalForcedFile, HttpService:JSONEncode(ForcedLockedList))
+                end)
+
+                for sIndex, sItem in ipairs(SavedScriptsList) do
+                    if sItem.name == fItem.name and sItem.code == fItem.code then
+                        table.remove(SavedScriptsList, sIndex)
+                        break
+                    end
+                end
+
+                SaveConfigsToFile()
+                RefreshSavedScripts()
+                AdminRefreshList()
+                ShowNotification("Deleted forced script globally", Theme.SubText)
+            end)
+        end
+        ForcedListContainer.Size = UDim2.new(1, 0, 0, math.max(110, ForcedListLayout.AbsoluteContentSize.Y + 5))
+        AdminScroll.CanvasSize = UDim2.new(0, 0, 0, AdminScrollLayout.AbsoluteContentSize.Y + ForcedListContainer.AbsoluteSize.Y + 20)
+    end
 
     ForceBtn.MouseButton1Click:Connect(function()
         if ForceNameInput.Text ~= "" and ForceCodeInput.Text ~= "" then
@@ -1060,12 +1162,15 @@ if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
             table.insert(SavedScriptsList, {name = ForceNameInput.Text, code = ForceCodeInput.Text, locked = true})
             SaveConfigsToFile()
             RefreshSavedScripts()
+            AdminRefreshList()
             
             ForceNameInput.Text = ""
             ForceCodeInput.Text = ""
             ShowNotification("Successfully deployed global injection!", Theme.Accent)
         end
     end)
+
+    AdminRefreshList()
 end
 
 -- COMMANDS PANEL SETUP
