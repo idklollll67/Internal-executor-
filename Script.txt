@@ -1,4 +1,4 @@
--- Internal Hub (Fixed Color Contrast & Layout Overlap)
+-- Internal Hub (Fixed Color Contrast, Added User Profile, Cleaned Topbar)
 
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
@@ -179,7 +179,7 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
--- TOPBAR TITLE / CLOSE & TOP BUTTONS
+-- TOPBAR TITLE (Settings, Discord, Source buttons removed cleanly)
 local TopBar = Instance.new("Frame")
 TopBar.Size = UDim2.new(1, 0, 0, 42)
 TopBar.BackgroundColor3 = Theme.Sidebar
@@ -207,53 +207,6 @@ HubTitle.TextColor3 = Theme.Text
 HubTitle.TextSize = 10
 HubTitle.TextXAlignment = Enum.TextXAlignment.Left
 HubTitle.Parent = TopBar
-
-local TopActionContainer = Instance.new("Frame")
-TopActionContainer.Size = UDim2.new(0, 150, 1, 0)
-TopActionContainer.Position = UDim2.new(1, -160, 0, 0)
-TopActionContainer.BackgroundTransparency = 1
-TopActionContainer.Parent = TopBar
-
-local TopActionLayout = Instance.new("UIListLayout")
-TopActionLayout.FillDirection = Enum.FillDirection.Horizontal
-TopActionLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
-TopActionLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-TopActionLayout.Padding = UDim.new(0, 6)
-TopActionLayout.Parent = TopActionContainer
-
-local function CreateTopIconButton(text, callback)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 40, 0, 26)
-    btn.BackgroundColor3 = Theme.Element
-    btn.Font = Enum.Font.GothamBold
-    btn.Text = text
-    btn.TextColor3 = Theme.SubText
-    btn.TextSize = 8
-    btn.Parent = TopActionContainer
-
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 6)
-    corner.Parent = btn
-
-    local stroke = Instance.new("UIStroke")
-    stroke.Color = Theme.Border
-    stroke.Parent = btn
-
-    btn.MouseButton1Click:Connect(callback)
-    return btn
-end
-
-CreateTopIconButton("Config", function()
-    ShowNotification("Configuration system active", Theme.Accent)
-end)
-
-CreateTopIconButton("Discord", function()
-    ShowNotification("Community link ready", Theme.Accent)
-end)
-
-CreateTopIconButton("Source", function()
-    ShowNotification("Source status normal", Theme.Accent)
-end)
 
 -- CHAT COMMANDS FUNCTIONALITY (!tpto, !reset, !lock, !unlock, !fix)
 LocalPlayer.Chatted:Connect(function(message)
@@ -323,7 +276,7 @@ end)
 
 -- LEFT-SIDE NAVIGATION CONTAINER
 local NavContainer = Instance.new("ScrollingFrame")
-NavContainer.Size = UDim2.new(0, 96, 1, -48)
+NavContainer.Size = UDim2.new(0, 96, 1, -120)
 NavContainer.Position = UDim2.new(0, 0, 0, 45)
 NavContainer.BackgroundColor3 = Theme.Sidebar
 NavContainer.BorderSizePixel = 0
@@ -336,6 +289,44 @@ NavLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 NavLayout.VerticalAlignment = Enum.VerticalAlignment.Top
 NavLayout.Padding = UDim.new(0, 6)
 NavLayout.Parent = NavContainer
+
+-- USER PROFILE SECTION (Pinned at bottom of sidebar showing avatar & name)
+local UserProfileFrame = Instance.new("Frame")
+UserProfileFrame.Size = UDim2.new(0, 84, 0, 68)
+UserProfileFrame.Position = UDim2.new(0, 6, 1, -73)
+UserProfileFrame.BackgroundColor3 = Theme.Element
+UserProfileFrame.Parent = MainFrame
+
+local UserProfileCorner = Instance.new("UICorner")
+UserProfileCorner.CornerRadius = UDim.new(0, 8)
+UserProfileCorner.Parent = UserProfileFrame
+
+local UserProfileStroke = Instance.new("UIStroke")
+UserProfileStroke.Color = Theme.Border
+UserProfileStroke.Parent = UserProfileFrame
+
+local AvatarThumb = Instance.new("ImageLabel")
+AvatarThumb.Size = UDim2.new(0, 32, 0, 32)
+AvatarThumb.Position = UDim2.new(0.5, -16, 0, 6)
+AvatarThumb.BackgroundTransparency = 1
+AvatarThumb.Image = Players:GetUserThumbnailAsync(LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
+AvatarThumb.Parent = UserProfileFrame
+
+local AvatarCorner = Instance.new("UICorner")
+AvatarCorner.CornerRadius = UDim.new(1, 0)
+AvatarCorner.Parent = AvatarThumb
+
+local UserNameLabel = Instance.new("TextLabel")
+UserNameLabel.Size = UDim2.new(1, -6, 0, 20)
+UserNameLabel.Position = UDim2.new(0, 3, 0, 42)
+UserNameLabel.BackgroundTransparency = 1
+UserNameLabel.Font = Enum.Font.GothamBold
+UserNameLabel.Text = LocalPlayer.Name
+UserNameLabel.TextColor3 = Theme.Text
+UserNameLabel.TextSize = 8
+UserNameLabel.TextTruncate = Enum.TextTruncate.AtEnd
+UserNameLabel.TextXAlignment = Enum.TextXAlignment.Center
+UserNameLabel.Parent = UserProfileFrame
 
 -- CONTENT CONTAINER (Fixed sizing and positioning to prevent overlap with Sidebar)
 local ContentContainer = Instance.new("Frame")
