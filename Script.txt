@@ -1,4 +1,4 @@
--- BSH Hub (Hand-Crafted Modern Design & Ultimate Performance Core)
+-- BSH Hub (Delta-Style Right-Sided Layout & Ultimate Performance Core)
 
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
@@ -121,11 +121,11 @@ OpenCloseGradient.Color = ColorSequence.new({
 OpenCloseGradient.Rotation = 45
 OpenCloseGradient.Parent = OpenCloseBtn
 
--- MAIN HUB CONTAINER
+-- MAIN HUB CONTAINER (MODIFIED FOR DELTA-STYLE LAYOUT)
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 480, 0, 320)
-MainFrame.Position = UDim2.new(0.5, -240, 0.5, -160)
+MainFrame.Size = UDim2.new(0, 520, 0, 320)
+MainFrame.Position = UDim2.new(0.5, -260, 0.5, -160)
 MainFrame.BackgroundColor3 = Color3.fromRGB(12, 11, 16)
 MainFrame.BorderSizePixel = 0
 MainFrame.Parent = ScreenGui
@@ -170,8 +170,9 @@ local MainCorner = Instance.new("UICorner")
 MainCorner.CornerRadius = UDim.new(0, 14)
 MainCorner.Parent = MainFrame
 
+-- TOPBAR TITLE / CLOSE
 local TopBar = Instance.new("Frame")
-TopBar.Size = UDim2.new(1, 0, 0, 42)
+TopBar.Size = UDim2.new(1, 0, 0, 38)
 TopBar.BackgroundColor3 = Color3.fromRGB(16, 14, 22)
 TopBar.BorderSizePixel = 0
 TopBar.Parent = MainFrame
@@ -187,9 +188,20 @@ TopBarSquare.BackgroundColor3 = Color3.fromRGB(16, 14, 22)
 TopBarSquare.BorderSizePixel = 0
 TopBarSquare.Parent = TopBar
 
+local HubTitle = Instance.new("TextLabel")
+HubTitle.Size = UDim2.new(0, 120, 1, 0)
+HubTitle.Position = UDim2.new(0, 16, 0, 0)
+HubTitle.BackgroundTransparency = 1
+HubTitle.Font = Enum.Font.GothamBold
+HubTitle.Text = "BSH HUB"
+HubTitle.TextColor3 = Color3.fromRGB(190, 150, 255)
+HubTitle.TextSize = 10
+HubTitle.TextXAlignment = Enum.TextXAlignment.Left
+HubTitle.Parent = TopBar
+
 local CloseBtn = Instance.new("TextButton")
 CloseBtn.Size = UDim2.new(0, 26, 0, 26)
-CloseBtn.Position = UDim2.new(1, -34, 0, 8)
+CloseBtn.Position = UDim2.new(1, -34, 0, 6)
 CloseBtn.BackgroundColor3 = Color3.fromRGB(26, 18, 24)
 CloseBtn.Font = Enum.Font.GothamBold
 CloseBtn.Text = "✕"
@@ -205,22 +217,26 @@ CloseBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = false
 end)
 
-local NavContainer = Instance.new("Frame")
-NavContainer.Size = UDim2.new(0, 310, 1, 0)
-NavContainer.Position = UDim2.new(0, 14, 0, 0)
+-- DELTA RIGHT-SIDE NAVIGATION CONTAINER
+local NavContainer = Instance.new("ScrollingFrame")
+NavContainer.Size = UDim2.new(0, 110, 1, -52)
+NavContainer.Position = UDim2.new(1, -118, 0, 44)
 NavContainer.BackgroundTransparency = 1
-NavContainer.Parent = TopBar
+NavContainer.ScrollBarThickness = 2
+NavContainer.ScrollBarImageColor3 = Color3.fromRGB(90, 70, 140)
+NavContainer.Parent = MainFrame
 
 local NavLayout = Instance.new("UIListLayout")
-NavLayout.FillDirection = Enum.FillDirection.Horizontal
-NavLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
-NavLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+NavLayout.FillDirection = Enum.FillDirection.Vertical
+NavLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+NavLayout.VerticalAlignment = Enum.VerticalAlignment.Top
 NavLayout.Padding = UDim.new(0, 6)
 NavLayout.Parent = NavContainer
 
+-- CONTENT CONTAINER (SHIFTED LEFT TO ACCOMMODATE RIGHT NAV)
 local ContentContainer = Instance.new("Frame")
-ContentContainer.Size = UDim2.new(1, -28, 1, -56)
-ContentContainer.Position = UDim2.new(0, 14, 0, 48)
+ContentContainer.Size = UDim2.new(1, -136, 1, -52)
+ContentContainer.Position = UDim2.new(0, 14, 0, 44)
 ContentContainer.BackgroundTransparency = 1
 ContentContainer.Parent = MainFrame
 
@@ -243,16 +259,16 @@ SavedPanel.Visible = true
 
 local function CreateNavButton(name, panel, isSpecial)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 56, 0, 24)
+    btn.Size = UDim2.new(1, -4, 0, 32)
     btn.BackgroundColor3 = isSpecial and Color3.fromRGB(48, 20, 20) or Color3.fromRGB(22, 19, 30)
     btn.Font = Enum.Font.GothamBold
     btn.Text = name
     btn.TextColor3 = isSpecial and Color3.fromRGB(255, 130, 130) or Color3.fromRGB(170, 160, 195)
-    btn.TextSize = 8
+    btn.TextSize = 9
     btn.Parent = NavContainer
 
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 6)
+    corner.CornerRadius = UDim.new(0, 8)
     corner.Parent = btn
 
     local stroke = Instance.new("UIStroke")
@@ -277,6 +293,8 @@ CreateNavButton("MISC", MiscPanel, false)
 if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
     CreateNavButton("ADMIN", AdminPanel, true)
 end
+
+NavContainer.CanvasSize = UDim2.new(0, 0, 0, NavLayout.AbsoluteContentSize.Y + 10)
 
 local UserFileName = ConfigFolderName .. "/" .. LocalPlayer.Name .. "_SavedScripts.json"
 local GlobalForcedFile = ConfigFolderName .. "/ForcedLockedScripts.json"
@@ -533,7 +551,7 @@ RefreshSavedScripts = function()
         itemStroke.Parent = itemFrame
 
         local label = Instance.new("TextLabel")
-        label.Size = UDim2.new(0, 120, 1, 0)
+        label.Size = UDim2.new(0, 110, 1, 0)
         label.Position = UDim2.new(0, 12, 0, 0)
         label.BackgroundTransparency = 1
         label.Font = Enum.Font.GothamMedium
@@ -544,8 +562,8 @@ RefreshSavedScripts = function()
         label.Parent = itemFrame
 
         local runBtn = Instance.new("TextButton")
-        runBtn.Size = UDim2.new(0, 36, 0, 22)
-        runBtn.Position = UDim2.new(1, -120, 0, 6)
+        runBtn.Size = UDim2.new(0, 34, 0, 22)
+        runBtn.Position = UDim2.new(1, -114, 0, 6)
         runBtn.BackgroundColor3 = Color3.fromRGB(20, 34, 24)
         runBtn.Font = Enum.Font.GothamBold
         runBtn.Text = "Run"
@@ -566,8 +584,8 @@ RefreshSavedScripts = function()
         end)
 
         local editBtn = Instance.new("TextButton")
-        editBtn.Size = UDim2.new(0, 36, 0, 22)
-        editBtn.Position = UDim2.new(1, -80, 0, 6)
+        editBtn.Size = UDim2.new(0, 34, 0, 22)
+        editBtn.Position = UDim2.new(1, -76, 0, 6)
         editBtn.BackgroundColor3 = Color3.fromRGB(20, 26, 42)
         editBtn.Font = Enum.Font.GothamBold
         editBtn.Text = "Edit"
@@ -587,8 +605,8 @@ RefreshSavedScripts = function()
         end)
 
         local delBtn = Instance.new("TextButton")
-        delBtn.Size = UDim2.new(0, 38, 0, 22)
-        delBtn.Position = UDim2.new(1, -40, 0, 6)
+        delBtn.Size = UDim2.new(0, 34, 0, 22)
+        delBtn.Position = UDim2.new(1, -38, 0, 6)
         delBtn.BackgroundColor3 = Color3.fromRGB(38, 20, 20)
         delBtn.Font = Enum.Font.GothamBold
         delBtn.Text = scriptData.locked and "Lock" or "Del"
@@ -772,7 +790,7 @@ SearchBox.FocusLost:Connect(function(enterPressed)
                 itemCorner.Parent = itemFrame
 
                 local label = Instance.new("TextLabel")
-                label.Size = UDim2.new(0, 120, 1, 0)
+                label.Size = UDim2.new(0, 110, 1, 0)
                 label.Position = UDim2.new(0, 12, 0, 0)
                 label.BackgroundTransparency = 1
                 label.Font = Enum.Font.GothamMedium
@@ -783,8 +801,8 @@ SearchBox.FocusLost:Connect(function(enterPressed)
                 label.Parent = itemFrame
 
                 local runBtn = Instance.new("TextButton")
-                runBtn.Size = UDim2.new(0, 36, 0, 22)
-                runBtn.Position = UDim2.new(1, -120, 0, 6)
+                runBtn.Size = UDim2.new(0, 34, 0, 22)
+                runBtn.Position = UDim2.new(1, -114, 0, 6)
                 runBtn.BackgroundColor3 = Color3.fromRGB(20, 34, 24)
                 runBtn.Font = Enum.Font.GothamBold
                 runBtn.Text = "Run"
@@ -801,8 +819,8 @@ SearchBox.FocusLost:Connect(function(enterPressed)
                 end)
 
                 local copyBtn = Instance.new("TextButton")
-                copyBtn.Size = UDim2.new(0, 36, 0, 22)
-                copyBtn.Position = UDim2.new(1, -80, 0, 6)
+                copyBtn.Size = UDim2.new(0, 34, 0, 22)
+                copyBtn.Position = UDim2.new(1, -76, 0, 6)
                 copyBtn.BackgroundColor3 = Color3.fromRGB(20, 26, 42)
                 copyBtn.Font = Enum.Font.GothamBold
                 copyBtn.Text = "Copy"
@@ -818,8 +836,8 @@ SearchBox.FocusLost:Connect(function(enterPressed)
                 end)
 
                 local saveBtn = Instance.new("TextButton")
-                saveBtn.Size = UDim2.new(0, 38, 0, 22)
-                saveBtn.Position = UDim2.new(1, -40, 0, 6)
+                saveBtn.Size = UDim2.new(0, 34, 0, 22)
+                saveBtn.Position = UDim2.new(1, -38, 0, 6)
                 saveBtn.BackgroundColor3 = Color3.fromRGB(24, 22, 34)
                 saveBtn.Font = Enum.Font.GothamBold
                 saveBtn.Text = "Save"
@@ -943,14 +961,13 @@ CreateMiscToggle("Anti AFK Guard", function(state)
     end
 end)
 
--- ULTIMATE CRAZY FPS BOOST BUTTON (ENHANCED PERFORMANCE RIG)
+-- ULTIMATE CRAZY FPS BOOST BUTTON
 CreateMiscButton("Crazy FPS Boost (Ultra Optimization)", function()
     ShowNotification("Executing Maximum FPS Optimization...", Color3.fromRGB(150, 230, 150))
     pcall(function()
         local Lighting = game:GetService("Lighting")
         local Terrain = workspace:FindFirstChildOfClass("Terrain")
         
-        -- Deep Lighting Purge
         Lighting.GlobalShadows = false
         Lighting.FogEnd = 9e9
         Lighting.Brightness = 1
@@ -959,7 +976,6 @@ CreateMiscButton("Crazy FPS Boost (Ultra Optimization)", function()
             pcall(function() v:Destroy() end)
         end
 
-        -- Terrain & Water Stripping
         if Terrain then
             Terrain.WaterWaveSize = 0
             Terrain.WaterWaveSpeed = 0
@@ -968,7 +984,6 @@ CreateMiscButton("Crazy FPS Boost (Ultra Optimization)", function()
             pcall(function() Terrain.Decoration = false end)
         end
 
-        -- Heavy Descendant Optimization & Garbage Sweep
         for _, v in ipairs(workspace:GetDescendants()) do
             if v:IsA("BasePart") then
                 v.Material = Enum.Material.SmoothPlastic
@@ -984,7 +999,6 @@ CreateMiscButton("Crazy FPS Boost (Ultra Optimization)", function()
             end
         end
 
-        -- Force Minimum Game Engine Graphics Settings
         settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
         pcall(function()
             UserSettings():GetService("UserGameSettings").SavedQualityLevel = Enum.SavedQualityLevel.Level1
