@@ -225,7 +225,7 @@ CloseBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = false
 end)
 
--- CHAT COMMANDS FUNCTIONALITY (!tpto, !reset, !lock, !unlock) with Partial Matching
+-- CHAT COMMANDS FUNCTIONALITY (!tpto, !reset, !lock, !unlock, !fix) with Partial Matching
 LocalPlayer.Chatted:Connect(function(message)
     local args = {}
     for word in message:gmatch("%S+") do
@@ -283,6 +283,12 @@ LocalPlayer.Chatted:Connect(function(message)
     elseif cmd == "!unlock" then
         isUiLocked = false
         ShowNotification("UI Unlocked via chat command", Color3.fromRGB(150, 230, 150))
+    elseif cmd == "!fix" then
+        isUiLocked = false
+        MainFrame.Position = UDim2.new(0.5, -260, 0.5, -160)
+        OpenCloseBtn.Position = UDim2.new(0, 18, 0.5, -22)
+        MainFrame.Visible = true
+        ShowNotification("UI Reset to Center Screen", Color3.fromRGB(150, 230, 150))
     end
 end)
 
@@ -390,7 +396,8 @@ local commandList = {
     {cmd = "!tpto <player>", status = "Active", desc = "Instantly teleports local character coordinates to target (supports partial names)."},
     {cmd = "!reset", status = "Active", desc = "Resets/kills your current character."},
     {cmd = "!lock", status = "Active", desc = "Locks the interface position and toggle button."},
-    {cmd = "!unlock", status = "Active", desc = "Unlocks the interface position and toggle button."}
+    {cmd = "!unlock", status = "Active", desc = "Unlocks the interface position and toggle button."},
+    {cmd = "!fix", status = "Active", desc = "Resets UI position back to center screen and unlocks if stuck."}
 }
 
 for _, info in ipairs(commandList) do
