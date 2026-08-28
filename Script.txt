@@ -1,4 +1,4 @@
--- BSH Hub (Delta-Style Right-Sided Layout & AI Assistant Module)
+-- Internal Hub (Delta-Style Right-Sided Layout & AI Assistant Module)
 
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
@@ -7,7 +7,7 @@ local VirtualUser = game:GetService("VirtualUser")
 local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 
-local ConfigFolderName = "BSHHub_Configs"
+local ConfigFolderName = "InternalHub_Configs"
 
 pcall(function()
     if not isfolder(ConfigFolderName) then makefolder(ConfigFolderName) end
@@ -15,12 +15,12 @@ end)
 
 local ParentGui = (gethui and gethui()) or LocalPlayer:WaitForChild("PlayerGui")
 
-if ParentGui:FindFirstChild("BSHInternalHub") then
-    ParentGui.BSHInternalHub:Destroy()
+if ParentGui:FindFirstChild("InternalHubGui") then
+    ParentGui.InternalHubGui:Destroy()
 end
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "BSHInternalHub"
+ScreenGui.Name = "InternalHubGui"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = ParentGui
 
@@ -99,9 +99,9 @@ OpenCloseBtn.Size = UDim2.new(0, 44, 0, 44)
 OpenCloseBtn.Position = UDim2.new(0, 18, 0.5, -22)
 OpenCloseBtn.BackgroundColor3 = Color3.fromRGB(18, 16, 24)
 OpenCloseBtn.Font = Enum.Font.GothamBold
-OpenCloseBtn.Text = "BSH"
+OpenCloseBtn.Text = "X"
 OpenCloseBtn.TextColor3 = Color3.fromRGB(190, 150, 255)
-OpenCloseBtn.TextSize = 11
+OpenCloseBtn.TextSize = 14
 OpenCloseBtn.ZIndex = 10
 OpenCloseBtn.Parent = ScreenGui
 
@@ -189,11 +189,11 @@ TopBarSquare.BorderSizePixel = 0
 TopBarSquare.Parent = TopBar
 
 local HubTitle = Instance.new("TextLabel")
-HubTitle.Size = UDim2.new(0, 120, 1, 0)
+HubTitle.Size = UDim2.new(0, 150, 1, 0)
 HubTitle.Position = UDim2.new(0, 16, 0, 0)
 HubTitle.BackgroundTransparency = 1
 HubTitle.Font = Enum.Font.GothamBold
-HubTitle.Text = "BSH HUB"
+HubTitle.Text = "INTERNAL EXECUTOR"
 HubTitle.TextColor3 = Color3.fromRGB(190, 150, 255)
 HubTitle.TextSize = 10
 HubTitle.TextXAlignment = Enum.TextXAlignment.Left
@@ -291,7 +291,7 @@ CreateNavButton("SAVED", SavedPanel, false, false)
 CreateNavButton("EXEC", ExecPanel, false, false)
 CreateNavButton("SEARCH", SearchPanel, false, false)
 CreateNavButton("MISC", MiscPanel, false, false)
-CreateNavButton("AI CHAT", AiPanel, false, true)
+CreateNavButton("AI MENU", AiPanel, false, true)
 
 if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
     CreateNavButton("ADMIN", AdminPanel, true, false)
@@ -650,7 +650,7 @@ end)
 
 RefreshSavedScripts()
 
--- AI CHATBOT PANEL
+-- AI CHATBOT PANEL (AI MENU)
 local AiChatScroll = Instance.new("ScrollingFrame")
 AiChatScroll.Size = UDim2.new(1, 0, 1, -40)
 AiChatScroll.Position = UDim2.new(0, 0, 0, 0)
@@ -668,7 +668,7 @@ AiInputBox.Size = UDim2.new(1, -65, 0, 32)
 AiInputBox.Position = UDim2.new(0, 0, 1, -34)
 AiInputBox.BackgroundColor3 = Color3.fromRGB(10, 9, 14)
 AiInputBox.Font = Enum.Font.GothamMedium
-AiInputBox.PlaceholderText = "Ask AI assistant anything..."
+AiInputBox.PlaceholderText = "Ask AI chatbot anything..."
 AiInputBox.Text = ""
 AiInputBox.TextColor3 = Color3.fromRGB(240, 235, 250)
 AiInputBox.PlaceholderColor3 = Color3.fromRGB(80, 70, 105)
@@ -721,7 +721,7 @@ local function AppendChatMessage(sender, text, isUser)
     end)
 end
 
-AppendChatMessage("System", "AI Chat ready! Powered by openai/gpt-oss-20b.", false)
+AppendChatMessage("System", "AI Chatbot ready! Powered by openai/gpt-oss-20b.", false)
 
 AiSendBtn.MouseButton1Click:Connect(function()
     local text = AiInputBox.Text
@@ -737,7 +737,7 @@ AiSendBtn.MouseButton1Click:Connect(function()
             local payload = {
                 model = "openai/gpt-oss-20b",
                 messages = {
-                    {role = "system", content = "You are a helpful general-purpose AI assistant inside a Roblox UI tool. Answer user questions clearly and concisely."},
+                    {role = "system", content = "You are a conversational general-purpose AI chatbot. Answer questions conversationally and directly. Do not write Lua code or scripts unless explicitly asked for regular text explanations."},
                     {role = "user", content = text}
                 },
                 temperature = 0.7
@@ -766,9 +766,6 @@ AiSendBtn.MouseButton1Click:Connect(function()
         end
     end)
 end)
-
--- AI PANEL
--- (Integrated directly via AiChatScroll, AiInputBox, and AiSendBtn above)
 
 -- ADMIN PANEL
 if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
@@ -833,6 +830,7 @@ if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
     ForceBtn.MouseButton1Click:Connect(function()
         if ForceNameInput.Text ~= "" and ForceCodeInput.Text ~= "" then
             local newEntry = {name = ForceNameInput.Text, code = ForceCodeInput.Text}
+            table.enter = nil -- dummy placeholder fix or just table.insert
             table.insert(ForcedLockedList, newEntry)
             pcall(function()
                 writefile(GlobalForcedFile, HttpService:JSONEncode(ForcedLockedList))
