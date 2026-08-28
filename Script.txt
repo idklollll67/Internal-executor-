@@ -1,4 +1,4 @@
--- BSH Hub (Updated with Custom UI Backgrounds & Toggle Icons)
+-- BSH Hub (Updated with Custom getcustomasset Background and Toggle)
 
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
@@ -12,16 +12,35 @@ pcall(function()
     if not isfolder(ConfigFolderName) then makefolder(ConfigFolderName) end
 end)
 
-local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+-- Download custom assets via getcustomasset
+local bgPath = ConfigFolderName .. "/BSH_Background.png"
+local togglePath = ConfigFolderName .. "/BSH_Toggle.png"
 
-if PlayerGui:FindFirstChild("BSHInternalHub") then
-    PlayerGui.BSHInternalHub:Destroy()
+pcall(function()
+    if not isfile(bgPath) then
+        writefile(bgPath, game:HttpGet("https://example.com/image.png"))
+    end
+end)
+
+pcall(function()
+    if not isfile(togglePath) then
+        writefile(togglePath, game:HttpGet("https://example.com/image.png"))
+    end
+end)
+
+local bgAsset = (getcustomasset and pcall(function() return getcustomasset(bgPath) end)) and getcustomasset(bgPath) or ""
+local toggleAsset = (getcustomasset and pcall(function() return getcustomasset(togglePath) end)) and getcustomasset(togglePath) or ""
+
+local ParentGui = (gethui and gethui()) or LocalPlayer:WaitForChild("PlayerGui")
+
+if ParentGui:FindFirstChild("BSHInternalHub") then
+    ParentGui.BSHInternalHub:Destroy()
 end
 
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "BSHInternalHub"
 ScreenGui.ResetOnSpawn = false
-ScreenGui.Parent = PlayerGui
+ScreenGui.Parent = ParentGui
 
 -- NOTIFICATION SYSTEM
 local NotifContainer = Instance.new("Frame")
@@ -79,16 +98,13 @@ local function ShowNotification(message, color)
     end)
 end
 
--- MAIN FRAME WITH CUSTOM IMAGE BACKGROUND (ID: 129399532587453)
+-- MAIN FRAME WITH CUSTOM IMAGE BACKGROUND
 local MainFrame = Instance.new("ImageLabel")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 440, 0, 300)
 MainFrame.Position = UDim2.new(0.5, -240, 0.5, -150)
-MainFrame.BackgroundTransparency = 0
-MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-MainFrame.Image = "rbxassetid://129399532587453"
-MainFrame.ScaleType = Enum.ScaleType.Slice
-MainFrame.SliceCenter = Rect.new(100, 100, 100, 100)
+MainFrame.BackgroundTransparency = 1
+MainFrame.Image = bgAsset
 MainFrame.BorderSizePixel = 0
 MainFrame.Parent = ScreenGui
 
@@ -96,12 +112,12 @@ local MainCorner = Instance.new("UICorner")
 MainCorner.CornerRadius = UDim.new(0, 6)
 MainCorner.Parent = MainFrame
 
--- OPEN/CLOSE TOGGLE BUTTON WITH CUSTOM IMAGE (ID: 16942037494)
+-- OPEN/CLOSE TOGGLE BUTTON WITH CUSTOM IMAGE
 local OpenCloseBtn = Instance.new("ImageButton")
 OpenCloseBtn.Size = UDim2.new(0, 36, 0, 36)
 OpenCloseBtn.Position = UDim2.new(0, 12, 0.5, -18)
 OpenCloseBtn.BackgroundTransparency = 1
-OpenCloseBtn.Image = "rbxassetid://16942037494"
+OpenCloseBtn.Image = toggleAsset
 OpenCloseBtn.Parent = ScreenGui
 
 OpenCloseBtn.MouseButton1Click:Connect(function()
