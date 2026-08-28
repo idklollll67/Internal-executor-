@@ -244,7 +244,6 @@ LocalPlayer.Chatted:Connect(function(message)
         local foundPlayer = nil
         targetName = targetName:lower()
         
-        -- First pass: Try exact match (username or display name)
         for _, p in ipairs(Players:GetPlayers()) do
             if p.Name:lower() == targetName or (p.DisplayName and p.DisplayName:lower() == targetName) then
                 foundPlayer = p
@@ -252,7 +251,6 @@ LocalPlayer.Chatted:Connect(function(message)
             end
         end
         
-        -- Second pass: Try substring/partial match if no exact match was found
         if not foundPlayer then
             for _, p in ipairs(Players:GetPlayers()) do
                 if p.Name:lower():find(targetName, 1, true) or (p.DisplayName and p.DisplayName:lower():find(targetName, 1, true)) then
@@ -285,10 +283,12 @@ LocalPlayer.Chatted:Connect(function(message)
         ShowNotification("UI Unlocked via chat command", Color3.fromRGB(150, 230, 150))
     elseif cmd == "!fix" then
         isUiLocked = false
+        -- Force re-parenting to active GUI container if viewport detached
+        ScreenGui.Parent = (gethui and gethui()) or LocalPlayer:WaitForChild("PlayerGui")
         MainFrame.Position = UDim2.new(0.5, -260, 0.5, -160)
         OpenCloseBtn.Position = UDim2.new(0, 18, 0.5, -22)
         MainFrame.Visible = true
-        ShowNotification("UI Reset to Center Screen", Color3.fromRGB(150, 230, 150))
+        ShowNotification("UI Force Reset to Center Screen", Color3.fromRGB(150, 230, 150))
     end
 end)
 
