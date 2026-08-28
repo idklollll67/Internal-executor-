@@ -1,4 +1,4 @@
--- Internal Hub (Balanced Modern Theme Layout & AI Assistant Module + Working Chat Lock/Unlock + CMDS Directory)
+-- Internal Hub (Fixed Color Contrast & Layout Overlap)
 
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
@@ -24,13 +24,13 @@ ScreenGui.Name = "InternalHubGui"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = ParentGui
 
--- BALANCED THEME COLORS
+-- DARK MODE VISIBLE COLORS (Fixed contrast so elements don't blend into pure black)
 local Theme = {
-    Background = Color3.fromRGB(18, 18, 20),
-    Sidebar = Color3.fromRGB(24, 24, 28),
-    Container = Color3.fromRGB(30, 30, 36),
-    Element = Color3.fromRGB(38, 38, 46),
-    Border = Color3.fromRGB(60, 60, 72),
+    Background = Color3.fromRGB(18, 18, 22),
+    Sidebar = Color3.fromRGB(24, 24, 30),
+    Container = Color3.fromRGB(32, 32, 40),
+    Element = Color3.fromRGB(42, 42, 54),
+    Border = Color3.fromRGB(65, 65, 82),
     Accent = Color3.fromRGB(88, 101, 242),
     Text = Color3.fromRGB(240, 240, 245),
     SubText = Color3.fromRGB(160, 160, 175)
@@ -323,8 +323,8 @@ end)
 
 -- LEFT-SIDE NAVIGATION CONTAINER
 local NavContainer = Instance.new("ScrollingFrame")
-NavContainer.Size = UDim2.new(0, 84, 1, -42)
-NavContainer.Position = UDim2.new(0, 0, 0, 42)
+NavContainer.Size = UDim2.new(0, 96, 1, -48)
+NavContainer.Position = UDim2.new(0, 0, 0, 45)
 NavContainer.BackgroundColor3 = Theme.Sidebar
 NavContainer.BorderSizePixel = 0
 NavContainer.ScrollBarThickness = 0
@@ -337,10 +337,10 @@ NavLayout.VerticalAlignment = Enum.VerticalAlignment.Top
 NavLayout.Padding = UDim.new(0, 6)
 NavLayout.Parent = NavContainer
 
--- CONTENT CONTAINER
+-- CONTENT CONTAINER (Fixed sizing and positioning to prevent overlap with Sidebar)
 local ContentContainer = Instance.new("Frame")
-ContentContainer.Size = UDim2.new(1, -94, 1, -52)
-ContentContainer.Position = UDim2.new(0, 90, 0, 48)
+ContentContainer.Size = UDim2.new(1, -108, 1, -56)
+ContentContainer.Position = UDim2.new(0, 102, 0, 50)
 ContentContainer.BackgroundTransparency = 1
 ContentContainer.Parent = MainFrame
 
@@ -365,7 +365,7 @@ SavedPanel.Visible = true
 
 local function CreateNavButton(nameText, panel)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 72, 0, 28)
+    btn.Size = UDim2.new(0, 84, 0, 28)
     btn.BackgroundColor3 = Theme.Element
     btn.Font = Enum.Font.GothamBold
     btn.Text = nameText
