@@ -408,9 +408,7 @@ pcall(function()
     end
 end)
 
-local SavedScriptsList = {
-    {name = "Infinite Yield", code = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()', locked = false}
-}
+local SavedScriptsList = {}
 
 for _, forcedItem in ipairs(ForcedLockedList) do
     local exists = false
