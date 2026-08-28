@@ -1,4 +1,4 @@
--- Internal Hub (Delta-Style Right-Sided Layout & AI Assistant Module + Chat Command Reset/Lock)
+-- Internal Hub (Delta-Style Right-Sided Layout & AI Assistant Module + Working Chat Lock/Unlock)
 
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
@@ -239,9 +239,11 @@ LocalPlayer.Chatted:Connect(function(message)
         ResetUIPosition()
     elseif msg == "!lock" then
         isUiLocked = true
+        OpenCloseStroke.Color = Color3.fromRGB(255, 90, 90)
         ShowNotification("UI Toggle has been locked!", Color3.fromRGB(240, 140, 140))
     elseif msg == "!unlock" then
         isUiLocked = false
+        OpenCloseStroke.Color = Color3.fromRGB(65, 45, 95)
         ShowNotification("UI Toggle has been unlocked!", Color3.fromRGB(150, 230, 150))
     end
 end)
