@@ -1,4 +1,4 @@
--- Shifted the main UI slightly to the left (-240 offset) while keeping notifications above the jump button and resized elements intact.
+-- BSH Hub (Updated with Custom UI Backgrounds & Toggle Icons)
 
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
@@ -23,7 +23,7 @@ ScreenGui.Name = "BSHInternalHub"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = PlayerGui
 
--- NOTIFICATION SYSTEM (Positioned above the mobile jump button area, bottom-right)
+-- NOTIFICATION SYSTEM
 local NotifContainer = Instance.new("Frame")
 NotifContainer.Size = UDim2.new(0, 200, 0, 150)
 NotifContainer.Position = UDim2.new(1, -220, 1, -230)
@@ -79,12 +79,16 @@ local function ShowNotification(message, color)
     end)
 end
 
--- RESIZED MAIN FRAME (Shifted slightly further to the left via X anchor/offset)
-local MainFrame = Instance.new("Frame")
+-- MAIN FRAME WITH CUSTOM IMAGE BACKGROUND (ID: 129399532587453)
+local MainFrame = Instance.new("ImageLabel")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 440, 0, 300)
 MainFrame.Position = UDim2.new(0.5, -240, 0.5, -150)
-MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 18)
+MainFrame.BackgroundTransparency = 0
+MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+MainFrame.Image = "rbxassetid://129399532587453"
+MainFrame.ScaleType = Enum.ScaleType.Slice
+MainFrame.SliceCenter = Rect.new(100, 100, 100, 100)
 MainFrame.BorderSizePixel = 0
 MainFrame.Parent = ScreenGui
 
@@ -92,9 +96,22 @@ local MainCorner = Instance.new("UICorner")
 MainCorner.CornerRadius = UDim.new(0, 6)
 MainCorner.Parent = MainFrame
 
+-- OPEN/CLOSE TOGGLE BUTTON WITH CUSTOM IMAGE (ID: 16942037494)
+local OpenCloseBtn = Instance.new("ImageButton")
+OpenCloseBtn.Size = UDim2.new(0, 36, 0, 36)
+OpenCloseBtn.Position = UDim2.new(0, 12, 0.5, -18)
+OpenCloseBtn.BackgroundTransparency = 1
+OpenCloseBtn.Image = "rbxassetid://16942037494"
+OpenCloseBtn.Parent = ScreenGui
+
+OpenCloseBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+end)
+
 local TopBar = Instance.new("Frame")
 TopBar.Size = UDim2.new(1, 0, 0, 34)
 TopBar.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+TopBar.BackgroundTransparency = 0.3
 TopBar.BorderSizePixel = 0
 TopBar.Parent = MainFrame
 
@@ -112,24 +129,6 @@ TitleLabel.TextColor3 = Color3.fromRGB(240, 240, 245)
 TitleLabel.TextSize = 12
 TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 TitleLabel.Parent = TopBar
-
-local OpenCloseBtn = Instance.new("TextButton")
-OpenCloseBtn.Size = UDim2.new(0, 30, 0, 30)
-OpenCloseBtn.Position = UDim2.new(0, 12, 0.5, -15)
-OpenCloseBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 32)
-OpenCloseBtn.Font = Enum.Font.GothamBold
-OpenCloseBtn.Text = "X"
-OpenCloseBtn.TextColor3 = Color3.fromRGB(220, 220, 230)
-OpenCloseBtn.TextSize = 10
-OpenCloseBtn.Parent = ScreenGui
-
-local OpenCloseCorner = Instance.new("UICorner")
-OpenCloseCorner.CornerRadius = UDim.new(0, 4)
-OpenCloseCorner.Parent = OpenCloseBtn
-
-OpenCloseBtn.MouseButton1Click:Connect(function()
-    MainFrame.Visible = not MainFrame.Visible
-end)
 
 local CloseBtn = Instance.new("TextButton")
 CloseBtn.Size = UDim2.new(0, 24, 0, 24)
@@ -384,7 +383,75 @@ CancelCorner.Parent = CancelModalBtn
 UploadBtn.MouseButton1Click:Connect(function() ModalBg.Visible = true end)
 CancelModalBtn.MouseButton1Click:Connect(function() ModalBg.Visible = false end)
 
-local function RefreshSavedScripts()
+local ExecBox
+local RefreshSavedScripts
+
+-- EXEC PANEL
+local ExecPanelFrame = ExecPanel
+local ExecBoxInstance = Instance.new("TextBox")
+ExecBoxInstance.Name = "ExecBox"
+ExecBoxInstance.Size = UDim2.new(1, 0, 1, -30)
+ExecBoxInstance.Position = UDim2.new(0, 0, 0, 0)
+ExecBoxInstance.BackgroundColor3 = Color3.fromRGB(12, 12, 15)
+ExecBoxInstance.Font = Enum.Font.Code
+ExecBoxInstance.MultiLine = true
+ExecBoxInstance.PlaceholderText = "-- Write Luau code here"
+ExecBoxInstance.Text = ""
+ExecBoxInstance.TextColor3 = Color3.fromRGB(240, 240, 245)
+ExecBoxInstance.TextSize = 8
+ExecBoxInstance.TextXAlignment = Enum.TextXAlignment.Left
+ExecBoxInstance.TextYAlignment = Enum.TextYAlignment.Top
+ExecBoxInstance.Parent = ExecPanel
+ExecBox = ExecBoxInstance
+
+local ExecBoxCorner = Instance.new("UICorner")
+ExecBoxCorner.CornerRadius = UDim.new(0, 4)
+ExecBoxCorner.Parent = ExecBoxInstance
+
+local ExecActionBtn = Instance.new("TextButton")
+ExecActionBtn.Size = UDim2.new(0, 125, 0, 26)
+ExecActionBtn.Position = UDim2.new(0, 0, 1, -26)
+ExecActionBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+ExecActionBtn.Font = Enum.Font.GothamMedium
+ExecActionBtn.Text = "Execute"
+ExecActionBtn.TextColor3 = Color3.fromRGB(180, 220, 180)
+ExecActionBtn.TextSize = 9
+ExecActionBtn.Parent = ExecPanel
+
+local ExecCorner = Instance.new("UICorner")
+ExecCorner.CornerRadius = UDim.new(0, 4)
+ExecCorner.Parent = ExecActionBtn
+
+local ClearExecBtn = Instance.new("TextButton")
+ClearExecBtn.Size = UDim2.new(0, 125, 0, 26)
+ClearExecBtn.Position = UDim2.new(1, -125, 1, -26)
+ClearExecBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+ClearExecBtn.Font = Enum.Font.GothamMedium
+ClearExecBtn.Text = "Clear"
+ClearExecBtn.TextColor3 = Color3.fromRGB(220, 160, 160)
+ClearExecBtn.TextSize = 9
+ClearExecBtn.Parent = ExecPanel
+
+local ClearExecCorner = Instance.new("UICorner")
+ClearExecCorner.CornerRadius = UDim.new(0, 4)
+ClearExecCorner.Parent = ClearExecBtn
+
+ExecActionBtn.MouseButton1Click:Connect(function()
+    if ExecBoxInstance.Text ~= "" then
+        pcall(function()
+            local fn = (loadstring or load)(ExecBoxInstance.Text)
+            if fn then task.spawn(fn) end
+        end)
+        ShowNotification("Executed custom script", Color3.fromRGB(150, 220, 150))
+    end
+end)
+
+ClearExecBtn.MouseButton1Click:Connect(function()
+    ExecBoxInstance.Text = ""
+    ShowNotification("Cleared executor", Color3.fromRGB(200, 200, 200))
+end)
+
+RefreshSavedScripts = function()
     for _, child in ipairs(ScriptScroll:GetChildren()) do
         if child:IsA("Frame") then child:Destroy() end
     end
@@ -399,7 +466,7 @@ local function RefreshSavedScripts()
         itemCorner.Parent = itemFrame
 
         local label = Instance.new("TextLabel")
-        label.Size = UDim2.new(0, 140, 1, 0)
+        label.Size = UDim2.new(0, 105, 1, 0)
         label.Position = UDim2.new(0, 8, 0, 0)
         label.BackgroundTransparency = 1
         label.Font = Enum.Font.Gotham
@@ -410,8 +477,8 @@ local function RefreshSavedScripts()
         label.Parent = itemFrame
 
         local runBtn = Instance.new("TextButton")
-        runBtn.Size = UDim2.new(0, 36, 0, 18)
-        runBtn.Position = UDim2.new(1, -84, 0, 5)
+        runBtn.Size = UDim2.new(0, 32, 0, 18)
+        runBtn.Position = UDim2.new(1, -112, 0, 5)
         runBtn.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
         runBtn.Font = Enum.Font.GothamMedium
         runBtn.Text = "Run"
@@ -431,9 +498,30 @@ local function RefreshSavedScripts()
             ShowNotification("Executed: " .. scriptData.name, Color3.fromRGB(150, 220, 150))
         end)
 
+        local editBtn = Instance.new("TextButton")
+        editBtn.Size = UDim2.new(0, 32, 0, 18)
+        editBtn.Position = UDim2.new(1, -76, 0, 5)
+        editBtn.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
+        editBtn.Font = Enum.Font.GothamMedium
+        editBtn.Text = "Edit"
+        editBtn.TextColor3 = Color3.fromRGB(180, 200, 255)
+        editBtn.TextSize = 8
+        editBtn.Parent = itemFrame
+
+        local editCorner = Instance.new("UICorner")
+        editCorner.CornerRadius = UDim.new(0, 3)
+        editCorner.Parent = editBtn
+
+        editBtn.MouseButton1Click:Connect(function()
+            ExecBoxInstance.Text = scriptData.code
+            SavedPanel.Visible = false
+            ExecPanelFrame.Visible = true
+            ShowNotification("Loaded script into editor", Color3.fromRGB(150, 200, 255))
+        end)
+
         local delBtn = Instance.new("TextButton")
         delBtn.Size = UDim2.new(0, 36, 0, 18)
-        delBtn.Position = UDim2.new(1, -44, 0, 5)
+        delBtn.Position = UDim2.new(1, -40, 0, 5)
         delBtn.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
         delBtn.Font = Enum.Font.GothamMedium
         delBtn.Text = scriptData.locked and "Lock" or "Del"
@@ -461,7 +549,7 @@ local function RefreshSavedScripts()
             table.remove(SavedScriptsList, index)
             SaveConfigsToFile()
             RefreshSavedScripts()
-            ShowNotification("deleted saved script", Color3.fromRGB(220, 120, 120))
+            ShowNotification("Deleted saved script", Color3.fromRGB(220, 120, 120))
         end)
     end
     ScriptScroll.CanvasSize = UDim2.new(0, 0, 0, ScrollLayout.AbsoluteContentSize.Y)
@@ -471,7 +559,7 @@ SaveActionBtn.MouseButton1Click:Connect(function()
     if NameInput.Text ~= "" and CodeInput.Text ~= "" then
         table.insert(SavedScriptsList, {name = NameInput.Text, code = CodeInput.Text, locked = false})
         SaveConfigsToFile()
-        ShowNotification("added script to saved", Color3.fromRGB(150, 200, 255))
+        ShowNotification("Added script to saved", Color3.fromRGB(150, 200, 255))
         NameInput.Text = ""
         CodeInput.Text = ""
         ModalBg.Visible = false
@@ -481,7 +569,7 @@ end)
 
 RefreshSavedScripts()
 
--- ADMIN PANEL (ONLY FOR dontaskmekdkdkdkkd)
+-- ADMIN PANEL
 if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
     local AdminTitle = Instance.new("TextLabel")
     AdminTitle.Size = UDim2.new(1, 0, 0, 14)
@@ -558,69 +646,7 @@ if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
     end)
 end
 
--- EXEC PANEL (With Clear Button added)
-local ExecBox = Instance.new("TextBox")
-ExecBox.Size = UDim2.new(1, 0, 1, -30)
-ExecBox.Position = UDim2.new(0, 0, 0, 0)
-ExecBox.BackgroundColor3 = Color3.fromRGB(12, 12, 15)
-ExecBox.Font = Enum.Font.Code
-ExecBox.MultiLine = true
-ExecBox.PlaceholderText = "-- Write Luau code here"
-ExecBox.Text = ""
-ExecBox.TextColor3 = Color3.fromRGB(240, 240, 245)
-ExecBox.TextSize = 8
-ExecBox.TextXAlignment = Enum.TextXAlignment.Left
-ExecBox.TextYAlignment = Enum.TextYAlignment.Top
-ExecBox.Parent = ExecPanel
-
-local ExecBoxCorner = Instance.new("UICorner")
-ExecBoxCorner.CornerRadius = UDim.new(0, 4)
-ExecBoxCorner.Parent = ExecBox
-
-local ExecActionBtn = Instance.new("TextButton")
-ExecActionBtn.Size = UDim2.new(0, 125, 0, 26)
-ExecActionBtn.Position = UDim2.new(0, 0, 1, -26)
-ExecActionBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
-ExecActionBtn.Font = Enum.Font.GothamMedium
-ExecActionBtn.Text = "Execute"
-ExecActionBtn.TextColor3 = Color3.fromRGB(180, 220, 180)
-ExecActionBtn.TextSize = 9
-ExecActionBtn.Parent = ExecPanel
-
-local ExecCorner = Instance.new("UICorner")
-ExecCorner.CornerRadius = UDim.new(0, 4)
-ExecCorner.Parent = ExecActionBtn
-
-local ClearExecBtn = Instance.new("TextButton")
-ClearExecBtn.Size = UDim2.new(0, 125, 0, 26)
-ClearExecBtn.Position = UDim2.new(1, -125, 1, -26)
-ClearExecBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
-ClearExecBtn.Font = Enum.Font.GothamMedium
-ClearExecBtn.Text = "Clear"
-ClearExecBtn.TextColor3 = Color3.fromRGB(220, 160, 160)
-ClearExecBtn.TextSize = 9
-ClearExecBtn.Parent = ExecPanel
-
-local ClearExecCorner = Instance.new("UICorner")
-ClearExecCorner.CornerRadius = UDim.new(0, 4)
-ClearExecCorner.Parent = ClearExecBtn
-
-ExecActionBtn.MouseButton1Click:Connect(function()
-    if ExecBox.Text ~= "" then
-        pcall(function()
-            local fn = (loadstring or load)(ExecBox.Text)
-            if fn then task.spawn(fn) end
-        end)
-        ShowNotification("Executed custom script", Color3.fromRGB(150, 220, 150))
-    end
-end)
-
-ClearExecBtn.MouseButton1Click:Connect(function()
-    ExecBox.Text = ""
-    ShowNotification("Cleared executor", Color3.fromRGB(200, 200, 200))
-end)
-
--- SEARCH PANEL (SCRIPTBLOX with Run, Save, and Copy buttons)
+-- SEARCH PANEL
 local SearchBox = Instance.new("TextBox")
 SearchBox.Size = UDim2.new(1, 0, 0, 26)
 SearchBox.Position = UDim2.new(0, 0, 0, 0)
@@ -755,7 +781,7 @@ SearchBox.FocusLost:Connect(function(enterPressed)
                     table.insert(SavedScriptsList, {name = scriptData.title or "Untitled", code = scriptData.script, locked = false})
                     SaveConfigsToFile()
                     RefreshSavedScripts()
-                    ShowNotification("added script to saved", Color3.fromRGB(150, 200, 255))
+                    ShowNotification("Added script to saved", Color3.fromRGB(150, 200, 255))
                 end)
             end
             SearchScroll.CanvasSize = UDim2.new(0, 0, 0, SearchScrollLayout.AbsoluteContentSize.Y)
@@ -927,4 +953,3 @@ JobIdBox.FocusLost:Connect(function(enterPressed)
 end)
 
 MiscScroll.CanvasSize = UDim2.new(0, 0, 0, MiscLayout.AbsoluteContentSize.Y)
-
