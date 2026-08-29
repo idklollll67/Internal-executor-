@@ -608,11 +608,11 @@ ExecBoxStroke.Color = Theme.Border
 ExecBoxStroke.Parent = ExecBoxInstance
 
 local ExecActionBtn = Instance.new("TextButton")
-ExecActionBtn.Size = UDim2.new(0.5, -4, 0, 30)
+ExecActionBtn.Size = UDim2.new(0.32, -3, 0, 30)
 ExecActionBtn.Position = UDim2.new(0, 0, 1, -30)
 ExecActionBtn.BackgroundColor3 = Theme.Accent
 ExecActionBtn.Font = Enum.Font.GothamBold
-ExecActionBtn.Text = "Execute Code"
+ExecActionBtn.Text = "Execute"
 ExecActionBtn.TextColor3 = Theme.Text
 ExecActionBtn.TextSize = 9
 ExecActionBtn.Parent = ExecPanel
@@ -625,9 +625,27 @@ local ExecActionStroke = Instance.new("UIStroke")
 ExecActionStroke.Color = Theme.Border
 ExecActionStroke.Parent = ExecActionBtn
 
+local FetchCopyBtn = Instance.new("TextButton")
+FetchCopyBtn.Size = UDim2.new(0.32, -3, 0, 30)
+FetchCopyBtn.Position = UDim2.new(0.34, 0, 1, -30)
+FetchCopyBtn.BackgroundColor3 = Theme.Accent
+FetchCopyBtn.Font = Enum.Font.GothamBold
+FetchCopyBtn.Text = "Fetch & Copy"
+FetchCopyBtn.TextColor3 = Theme.Text
+FetchCopyBtn.TextSize = 9
+FetchCopyBtn.Parent = ExecPanel
+
+local FetchCopyCorner = Instance.new("UICorner")
+FetchCopyCorner.CornerRadius = UDim.new(0, 8)
+FetchCopyCorner.Parent = FetchCopyBtn
+
+local FetchCopyStroke = Instance.new("UIStroke")
+FetchCopyStroke.Color = Theme.Border
+FetchCopyStroke.Parent = FetchCopyBtn
+
 local ClearExecBtn = Instance.new("TextButton")
-ClearExecBtn.Size = UDim2.new(0.5, -4, 0, 30)
-ClearExecBtn.Position = UDim2.new(0.5, 4, 1, -30)
+ClearExecBtn.Size = UDim2.new(0.32, -3, 0, 30)
+ClearExecBtn.Position = UDim2.new(0.68, 0, 1, -30)
 ClearExecBtn.BackgroundColor3 = Theme.Element
 ClearExecBtn.Font = Enum.Font.GothamBold
 ClearExecBtn.Text = "Clear"
@@ -651,6 +669,26 @@ ExecActionBtn.MouseButton1Click:Connect(function()
         end)
         ShowNotification("Executed code buffer successfully", Theme.Accent)
     end
+end)
+
+FetchCopyBtn.MouseButton1Click:Connect(function()
+    task.spawn(function()
+        local url = "https://raw.githubusercontent.com/Jotarokujo749/Zamasuhub1/refs/heads/main/zmhubfen.lua"
+        local success, source = pcall(function()
+            return game:HttpGet(url)
+        end)
+        
+        if success and source then
+            if setclipboard then
+                setclipboard(source)
+                ShowNotification("Source copied to clipboard!", Theme.Accent)
+            else
+                ShowNotification("setclipboard not supported by environment", Color3.fromRGB(240, 100, 100))
+            end
+        else
+            ShowNotification("Failed to fetch script from URL", Color3.fromRGB(240, 100, 100))
+        end
+    end)
 end)
 
 ClearExecBtn.MouseButton1Click:Connect(function()
@@ -1617,7 +1655,7 @@ JoinJobBtn.TextColor3 = Theme.Text
 JoinJobBtn.TextSize = 8
 JoinJobBtn.Parent = JoinJobFrame
 
-local JoinJobBtnCorner = Instance.new("UICorner")
+let JoinJobBtnCorner = Instance.new("UICorner")
 JoinJobBtnCorner.CornerRadius = UDim.new(0, 6)
 JoinJobBtnCorner.Parent = JoinJobBtn
 
