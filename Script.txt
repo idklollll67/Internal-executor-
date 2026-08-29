@@ -1,4 +1,4 @@
--- Internal Hub (Fixed Color Contrast, Extra Compact User Profile, Secured Admin Scripts & Persistent Delta Hide)
+-- Internal Hub (Fixed ScrollingFrame CanvasSizes, Dynamic Layout Resizing & Persistent Delta Hide)
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
@@ -63,7 +63,7 @@ ScreenGui.Name = "InternalHubGui"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = ParentGui
 
--- DARK MODE VISIBLE COLORS (Fixed contrast so elements don't blend into pure black)
+-- DARK MODE VISIBLE COLORS
 local Theme = {
     Background = Color3.fromRGB(18, 18, 22),
     Sidebar = Color3.fromRGB(24, 24, 30),
@@ -75,7 +75,7 @@ local Theme = {
     SubText = Color3.fromRGB(160, 160, 175)
 }
 
--- ARTISANAL NOTIFICATION SYSTEM
+-- NOTIFICATION SYSTEM
 local NotifContainer = Instance.new("Frame")
 NotifContainer.Size = UDim2.new(0, 260, 0, 280)
 NotifContainer.Position = UDim2.new(1, -270, 1, -290)
@@ -144,7 +144,7 @@ local function ShowNotification(message, accentColor)
     end)
 end
 
--- ORGANIC FLOATING TOGGLE BUTTON
+-- FLOATING TOGGLE BUTTON
 local OpenCloseBtn = Instance.new("TextButton")
 OpenCloseBtn.Size = UDim2.new(0, 44, 0, 44)
 OpenCloseBtn.Position = UDim2.new(0, 18, 0.5, -22)
@@ -247,7 +247,7 @@ HubTitle.TextSize = 10
 HubTitle.TextXAlignment = Enum.TextXAlignment.Left
 HubTitle.Parent = TopBar
 
--- CHAT COMMANDS FUNCTIONALITY (!tpto, !reset, !lock, !unlock, !fix)
+-- CHAT COMMANDS FUNCTIONALITY
 LocalPlayer.Chatted:Connect(function(message)
     local args = {}
     for word in message:gmatch("%S+") do
@@ -329,7 +329,11 @@ NavLayout.VerticalAlignment = Enum.VerticalAlignment.Top
 NavLayout.Padding = UDim.new(0, 5)
 NavLayout.Parent = NavContainer
 
--- MINIMALIST MICRO USER PROFILE SECTION (32px height, 20px avatar, tiny text)
+NavLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    NavContainer.CanvasSize = UDim2.new(0, 0, 0, NavLayout.AbsoluteContentSize.Y + 10)
+end)
+
+-- USER PROFILE SECTION
 local UserProfileFrame = Instance.new("Frame")
 UserProfileFrame.Size = UDim2.new(0, 84, 0, 32)
 UserProfileFrame.Position = UDim2.new(0, 6, 1, -37)
@@ -510,6 +514,10 @@ ScriptScroll.Parent = SavedPanel
 local ScrollLayout = Instance.new("UIListLayout")
 ScrollLayout.Padding = UDim.new(0, 6)
 ScrollLayout.Parent = ScriptScroll
+
+ScrollLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    ScriptScroll.CanvasSize = UDim2.new(0, 0, 0, ScrollLayout.AbsoluteContentSize.Y + 10)
+end)
 
 local ModalBg = Instance.new("Frame")
 ModalBg.Size = UDim2.new(1, 0, 1, 0)
@@ -868,7 +876,7 @@ RefreshSavedScripts = function()
             end)
         end
     end
-    ScriptScroll.CanvasSize = UDim2.new(0, 0, 0, ScrollLayout.AbsoluteContentSize.Y)
+    ScriptScroll.CanvasSize = UDim2.new(0, 0, 0, ScrollLayout.AbsoluteContentSize.Y + 10)
 end
 
 SaveActionBtn.MouseButton1Click:Connect(function()
@@ -897,6 +905,10 @@ AiChatScroll.Parent = AiPanel
 local AiChatLayout = Instance.new("UIListLayout")
 AiChatLayout.Padding = UDim.new(0, 6)
 AiChatLayout.Parent = AiChatScroll
+
+AiChatLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    AiChatScroll.CanvasSize = UDim2.new(0, 0, 0, AiChatLayout.AbsoluteContentSize.Y + 10)
+end)
 
 local AiInputBox = Instance.new("TextBox")
 AiInputBox.Size = UDim2.new(1, -65, 0, 32)
@@ -967,7 +979,7 @@ local function AppendChatMessage(sender, text, isUser)
         task.wait()
         label.Size = UDim2.new(1, -16, 0, label.TextBounds.Y + 4)
         msgFrame.Size = UDim2.new(1, 0, 0, label.TextBounds.Y + 12)
-        AiChatScroll.CanvasSize = UDim2.new(0, 0, 0, AiChatLayout.AbsoluteContentSize.Y)
+        AiChatScroll.CanvasSize = UDim2.new(0, 0, 0, AiChatLayout.AbsoluteContentSize.Y + 10)
         AiChatScroll.CanvasPosition = Vector2.new(0, AiChatScroll.CanvasSize.Y.Offset)
     end)
 end
@@ -1030,6 +1042,10 @@ if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
     local AdminScrollLayout = Instance.new("UIListLayout")
     AdminScrollLayout.Padding = UDim.new(0, 6)
     AdminScrollLayout.Parent = AdminScroll
+
+    AdminScrollLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        AdminScroll.CanvasSize = UDim2.new(0, 0, 0, AdminScrollLayout.AbsoluteContentSize.Y + 10)
+    end)
 
     local AdminTitle = Instance.new("TextLabel")
     AdminTitle.Size = UDim2.new(1, 0, 0, 18)
@@ -1232,6 +1248,10 @@ local CommandsLayout = Instance.new("UIListLayout")
 CommandsLayout.Padding = UDim.new(0, 5)
 CommandsLayout.Parent = CommandsScroll
 
+CommandsLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    CommandsScroll.CanvasSize = UDim2.new(0, 0, 0, CommandsLayout.AbsoluteContentSize.Y + 10)
+end)
+
 local commandList = {
     {cmd = "!tpto <player>", status = "Active", desc = "Instantly teleports local character coordinates to target."},
     {cmd = "!reset", status = "Active", desc = "Resets/kills your current character."},
@@ -1288,7 +1308,7 @@ for _, info in ipairs(commandList) do
     descLbl.Parent = item
 end
 
-CommandsScroll.CanvasSize = UDim2.new(0, 0, 0, CommandsLayout.AbsoluteContentSize.Y)
+CommandsScroll.CanvasSize = UDim2.new(0, 0, 0, CommandsLayout.AbsoluteContentSize.Y + 10)
 
 -- SEARCH PANEL
 local SearchBox = Instance.new("TextBox")
@@ -1323,6 +1343,10 @@ SearchScroll.Parent = SearchPanel
 local SearchScrollLayout = Instance.new("UIListLayout")
 SearchScrollLayout.Padding = UDim.new(0, 6)
 SearchScrollLayout.Parent = SearchScroll
+
+SearchScrollLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    SearchScroll.CanvasSize = UDim2.new(0, 0, 0, SearchScrollLayout.AbsoluteContentSize.Y + 10)
+end)
 
 SearchBox.FocusLost:Connect(function(enterPressed)
     if not enterPressed or SearchBox.Text == "" then return end
@@ -1448,7 +1472,6 @@ SearchBox.FocusLost:Connect(function(enterPressed)
                     ShowNotification("Imported script to storage", Theme.Accent)
                 end)
             end
-            SearchScroll.CanvasSize = UDim2.new(0, 0, 0, SearchScrollLayout.AbsoluteContentSize.Y)
             ShowNotification("Query completed successfully", Theme.Accent)
         end
     end)
@@ -1465,6 +1488,10 @@ MiscScroll.Parent = MiscPanel
 local MiscLayout = Instance.new("UIListLayout")
 MiscLayout.Padding = UDim.new(0, 6)
 MiscLayout.Parent = MiscScroll
+
+MiscLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    MiscScroll.CanvasSize = UDim2.new(0, 0, 0, MiscLayout.AbsoluteContentSize.Y + 10)
+end)
 
 local function CreateMiscButton(name, callback)
     local btn = Instance.new("TextButton")
@@ -1606,7 +1633,6 @@ CreateMiscToggle("Hide/Unhide Delta UI", deltaHiddenState and "Hide/Unhide Delta
     end
 end)
 
--- If loaded in active state, fire the hidden loop immediately
 if deltaHiddenState then
     task.spawn(function()
         while deltaHiddenState do
@@ -1739,4 +1765,5 @@ JoinJobBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-MiscScroll.CanvasSize = UDim2.new(0, 0, 0, MiscLayout.AbsoluteContentSize.Y)
+-- Trigger initial canvas update calculation
+MiscScroll.CanvasSize = UDim2.new(0, 0, 0, MiscLayout.AbsoluteContentSize.Y + 10)
