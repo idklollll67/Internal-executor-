@@ -1,4 +1,3 @@
--- Internal Hub (Fixed ScrollingFrame CanvasSizes, Dynamic Layout Resizing & Persistent Delta Hide)
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
@@ -485,7 +484,7 @@ end
 
 LoadConfigsFromFile()
 
--- SAVED SYSTEM PANEL
+-- SAVED SYSTEM PANEL & EDIT MODAL
 local UploadBtn = Instance.new("TextButton")
 UploadBtn.Size = UDim2.new(1, 0, 0, 32)
 UploadBtn.BackgroundColor3 = Theme.Container
@@ -625,7 +624,16 @@ local CancelStroke = Instance.new("UIStroke")
 CancelStroke.Color = Theme.Border
 CancelStroke.Parent = CancelModalBtn
 
-UploadBtn.MouseButton1Click:Connect(function() ModalBg.Visible = true end)
+local currentEditingIndex = nil
+
+UploadBtn.MouseButton1Click:Connect(function()
+    currentEditingIndex = nil
+    NameInput.Text = ""
+    CodeInput.Text = ""
+    SaveActionBtn.Text = "Save Entry"
+    ModalBg.Visible = true 
+end)
+
 CancelModalBtn.MouseButton1Click:Connect(function() ModalBg.Visible = false end)
 
 -- EXECUTOR PANEL
@@ -844,10 +852,12 @@ RefreshSavedScripts = function()
             editStroke.Parent = editBtn
 
             editBtn.MouseButton1Click:Connect(function()
-                ExecBoxInstance.Text = scriptData.code
-                SavedPanel.Visible = false
-                ExecPanel.Visible = true
-                ShowNotification("Loaded script into editor", Theme.Accent)
+                currentEditingIndex = index
+                NameInput.Text = scriptData.name
+                CodeInput.Text = scriptData.code
+                SaveActionBtn.Text = "Save Changes"
+                ModalBg.Visible = true
+                ShowNotification("Editing script entry...", Theme.Accent)
             end)
 
             local delBtn = Instance.new("TextButton")
@@ -881,9 +891,16 @@ end
 
 SaveActionBtn.MouseButton1Click:Connect(function()
     if NameInput.Text ~= "" and CodeInput.Text ~= "" then
-        table.insert(SavedScriptsList, {name = NameInput.Text, code = CodeInput.Text, locked = false})
+        if currentEditingIndex then
+            SavedScriptsList[currentEditingIndex].name = NameInput.Text
+            SavedScriptsList[currentEditingIndex].code = CodeInput.Text
+            currentEditingIndex = nil
+            ShowNotification("Updated saved script entry", Theme.Accent)
+        else
+            table.insert(SavedScriptsList, {name = NameInput.Text, code = CodeInput.Text, locked = false})
+            ShowNotification("Saved entry to storage", Theme.Accent)
+        end
         SaveConfigsToFile()
-        ShowNotification("Saved entry to storage", Theme.Accent)
         NameInput.Text = ""
         CodeInput.Text = ""
         ModalBg.Visible = false
