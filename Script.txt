@@ -1,5 +1,4 @@
 -- Internal Hub (Fixed Color Contrast, Extra Compact User Profile, Secured Admin Scripts)
-
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
@@ -682,11 +681,11 @@ RefreshSavedScripts = function()
         local label = Instance.new("TextLabel")
         local labelWidth
         if not scriptData.locked then
-            labelWidth = 110 -- Run, Edit, Del
+            labelWidth = 110
         elseif isAdmin then
-            labelWidth = 145 -- Run, Del (for admin)
+            labelWidth = 145
         else
-            labelWidth = 180 -- Run only (for normal users on locked scripts)
+            labelWidth = 180
         end
 
         label.Size = UDim2.new(0, labelWidth, 1, 0)
@@ -1501,10 +1500,8 @@ local function CreateMiscToggle(name, callback)
         isAntiAfkEnabled = not isAntiAfkEnabled
         if isAntiAfkEnabled then
             btn.Text = name .. ": Active"
-            ShowNotification("Anti-AFK Protection Engaged", Theme.Accent)
         else
             btn.Text = name .. ": Inactive"
-            ShowNotification("Anti-AFK Protection Disengaged", Theme.SubText)
         end
         callback(isAntiAfkEnabled, btn)
     end)
@@ -1512,15 +1509,62 @@ end
 
 CreateMiscToggle("Anti AFK Guard", function(state)
     if state then
+        ShowNotification("Anti-AFK Protection Engaged", Theme.Accent)
         antiAfkConnection = LocalPlayer.Idled:Connect(function()
             VirtualUser:CaptureController()
             VirtualUser:ClickButton2(Vector2.new())
         end)
     else
+        ShowNotification("Anti-AFK Protection Disengaged", Theme.SubText)
         if antiAfkConnection then
             antiAfkConnection:Disconnect()
             antiAfkConnection = nil
         end
+    end
+end)
+
+local deltaHiddenState = false
+CreateMiscToggle("Hide/Unhide Delta UI", function(state)
+    deltaHiddenState = state
+    
+    if deltaHiddenState then
+        ShowNotification("Delta UI Hidden", Theme.Accent)
+        task.spawn(function()
+            while deltaHiddenState do
+                pcall(function()
+                    local targetGui = gethui and gethui() or game:GetService("CoreGui")
+                    for _, gui in ipairs(targetGui:GetChildren()) do
+                        if gui:IsA("ScreenGui") and gui ~= ScreenGui then
+                            local isRandomized = false
+                            local name = gui.Name
+                            
+                            for i = 1, #name do
+                                local character = name:sub(i, i)
+                                if not character:match("[%w_]") then
+                                    isRandomized = true
+                                    break
+                                end
+                            end
+                            
+                            if isRandomized or gui:FindFirstChild("Logo") or gui:FindFirstChild("Main") then
+                                gui.Enabled = false
+                            end
+                        end
+                    end
+                end)
+                task.wait(0.5)
+            end
+        end)
+    else
+        ShowNotification("Delta UI Restored", Theme.SubText)
+        pcall(function()
+            local targetGui = gethui and gethui() or game:GetService("CoreGui")
+            for _, gui in ipairs(targetGui:GetChildren()) do
+                if gui:IsA("ScreenGui") then
+                    gui.Enabled = true
+                end
+            end
+        end)
     end
 end)
 
