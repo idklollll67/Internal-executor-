@@ -1568,46 +1568,39 @@ CreateMiscToggle("Hide/Unhide Delta UI", function(state)
     end
 end)
 
-CreateMiscButton("Crazy FPS Boost (Ultra Optimization)", function()
-    ShowNotification("Executing Maximum FPS Optimization...", Theme.Accent)
+CreateMiscButton("Crazy FPS Boost (Color Preserved)", function()
+    ShowNotification("Executing Clean FPS Optimization...", Theme.Accent)
     pcall(function()
         local Lighting = game:GetService("Lighting")
         local Terrain = workspace:FindFirstChildOfClass("Terrain")
         
         Lighting.GlobalShadows = false
         Lighting.FogEnd = 9e9
-        Lighting.Brightness = 1
-        Lighting.ClockTime = 14
         for _, v in ipairs(Lighting:GetChildren()) do
-            pcall(function() v:Destroy() end)
+            if v:IsA("PostEffect") or v:IsA("Atmosphere") or v:IsA("Clouds") then
+                pcall(function() v:Destroy() end)
+            end
         end
 
         if Terrain then
             Terrain.WaterWaveSize = 0
             Terrain.WaterWaveSpeed = 0
             Terrain.WaterReflectance = 0
-            Terrain.WaterTransparency = 1
+            Terrain.WaterTransparency = 0.5
             pcall(function() Terrain.Decoration = false end)
         end
 
         for _, v in ipairs(workspace:GetDescendants()) do
-            if v:IsA("BasePart") then
-                v.Material = Enum.Material.SmoothPlastic
-                v.Reflectance = 0
-                v.CastShadow = false
-                v.Color = Color3.fromRGB(130, 130, 130)
-            elseif v:IsA("Decal") or v:IsA("Texture") or v:IsA("SpecialMesh") or v:IsA("MeshPart") then
+            if v:IsA("Decal") or v:IsA("Texture") or v:IsA("SpecialMesh") then
                 pcall(function() v:Destroy() end)
             elseif v:IsA("ParticleEmitter") or v:IsA("Fire") or v:IsA("Smoke") or v:IsA("Sparkles") or v:IsA("Trail") or v:IsA("Beam") or v:IsA("Explosion") then
-                pcall(function() v:Destroy() end)
-            elseif v:IsA("PostEffect") or v:IsA("Atmosphere") or v:IsA("Sky") or v:IsA("Clouds") then
                 pcall(function() v:Destroy() end)
             end
         end
 
-        settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+        settings().Rendering.QualityLevel = Enum.QualityLevel.Level05
     end)
-    ShowNotification("Maximum FPS Boost Active!", Theme.Accent)
+    ShowNotification("Clean FPS Boost Active (Colors Intact)!", Theme.Accent)
 end)
 
 CreateMiscButton("Copy ServerJob ID", function()
