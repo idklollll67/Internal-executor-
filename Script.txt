@@ -1,10 +1,11 @@
--- Internal Hub (Fixed Color Contrast, Extra Compact User Profile, Secured Admin Scripts)
+-- Internal Hub (Fixed Color Contrast, Extra Compact User Profile, Secured Admin Scripts & Persistent Delta Hide)
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
 local VirtualUser = game:GetService("VirtualUser")
 local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
+local CoreGui = gethui and gethui() or game:GetService("CoreGui")
 
 local ConfigFolderName = "InternalHub_Configs"
 
@@ -17,6 +18,45 @@ local ParentGui = (gethui and gethui()) or LocalPlayer:WaitForChild("PlayerGui")
 if ParentGui:FindFirstChild("InternalHubGui") then
     ParentGui.InternalHubGui:Destroy()
 end
+
+-- Username-based Delta Hide State Persistence
+local safeName = LocalPlayer.Name:gsub("[%p%c%s]", "_")
+local deltaStateFileName = ConfigFolderName .. "/DeltaSettings_" .. safeName .. ".json"
+
+local function saveDeltaHideState(isHidden)
+    if writefile then
+        pcall(function()
+            writefile(deltaStateFileName, HttpService:JSONEncode({Hidden = isHidden}))
+        end)
+    end
+end
+
+local function loadDeltaHideState()
+    if isfile and isfile(deltaStateFileName) then
+        local success, decoded = pcall(function()
+            return HttpService:JSONDecode(readfile(deltaStateFileName))
+        end)
+        if success and decoded and type(decoded.Hidden) == "boolean" then
+            return decoded.Hidden
+        end
+    end
+    return false
+end
+
+local deltaHiddenState = loadDeltaHideState()
+
+-- Apply initial loaded state immediately upon script startup
+task.spawn(function()
+    if deltaHiddenState then
+        pcall(function()
+            for _, gui in ipairs(CoreGui:GetChildren()) do
+                if gui:IsA("ScreenGui") and (gui.Name:lower():find("delta") or gui:FindFirstChild("Delta")) then
+                    gui.Enabled = false
+                end
+            end
+        end)
+    end
+end)
 
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "InternalHubGui"
@@ -1478,12 +1518,12 @@ end)
 local antiAfkConnection = nil
 local isAntiAfkEnabled = false
 
-local function CreateMiscToggle(name, callback)
+local function CreateMiscToggle(name, initialText, callback)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1, 0, 0, 32)
     btn.BackgroundColor3 = Theme.Container
     btn.Font = Enum.Font.GothamMedium
-    btn.Text = name .. ": Inactive"
+    btn.Text = initialText
     btn.TextColor3 = Theme.Text
     btn.TextSize = 9
     btn.Parent = MiscScroll
@@ -1497,24 +1537,22 @@ local function CreateMiscToggle(name, callback)
     stroke.Parent = btn
 
     btn.MouseButton1Click:Connect(function()
-        isAntiAfkEnabled = not isAntiAfkEnabled
-        if isAntiAfkEnabled then
-            btn.Text = name .. ": Active"
-        else
-            btn.Text = name .. ": Inactive"
-        end
-        callback(isAntiAfkEnabled, btn)
+        callback(btn)
     end)
+    return btn
 end
 
-CreateMiscToggle("Anti AFK Guard", function(state)
-    if state then
+CreateMiscToggle("Anti AFK Guard", "Anti AFK Guard: Inactive", function(btn)
+    isAntiAfkEnabled = not isAntiAfkEnabled
+    if isAntiAfkEnabled then
+        btn.Text = "Anti AFK Guard: Active"
         ShowNotification("Anti-AFK Protection Engaged", Theme.Accent)
         antiAfkConnection = LocalPlayer.Idled:Connect(function()
             VirtualUser:CaptureController()
             VirtualUser:ClickButton2(Vector2.new())
         end)
     else
+        btn.Text = "Anti AFK Guard: Inactive"
         ShowNotification("Anti-AFK Protection Disengaged", Theme.SubText)
         if antiAfkConnection then
             antiAfkConnection:Disconnect()
@@ -1523,17 +1561,17 @@ CreateMiscToggle("Anti AFK Guard", function(state)
     end
 end)
 
-local deltaHiddenState = false
-CreateMiscToggle("Hide/Unhide Delta UI", function(state)
-    deltaHiddenState = state
+CreateMiscToggle("Hide/Unhide Delta UI", deltaHiddenState and "Hide/Unhide Delta UI: Active" or "Hide/Unhide Delta UI: Inactive", function(btn)
+    deltaHiddenState = not deltaHiddenState
+    saveDeltaHideState(deltaHiddenState)
     
     if deltaHiddenState then
-        ShowNotification("Delta UI Hidden", Theme.Accent)
+        btn.Text = "Hide/Unhide Delta UI: Active"
+        ShowNotification("Delta UI Hidden & Saved", Theme.Accent)
         task.spawn(function()
             while deltaHiddenState do
                 pcall(function()
-                    local targetGui = gethui and gethui() or game:GetService("CoreGui")
-                    for _, gui in ipairs(targetGui:GetChildren()) do
+                    for _, gui in ipairs(CoreGui:GetChildren()) do
                         if gui:IsA("ScreenGui") and gui ~= ScreenGui then
                             local isRandomized = false
                             local name = gui.Name
@@ -1556,10 +1594,10 @@ CreateMiscToggle("Hide/Unhide Delta UI", function(state)
             end
         end)
     else
-        ShowNotification("Delta UI Restored", Theme.SubText)
+        btn.Text = "Hide/Unhide Delta UI: Inactive"
+        ShowNotification("Delta UI Restored & Saved", Theme.SubText)
         pcall(function()
-            local targetGui = gethui and gethui() or game:GetService("CoreGui")
-            for _, gui in ipairs(targetGui:GetChildren()) do
+            for _, gui in ipairs(CoreGui:GetChildren()) do
                 if gui:IsA("ScreenGui") then
                     gui.Enabled = true
                 end
@@ -1567,6 +1605,33 @@ CreateMiscToggle("Hide/Unhide Delta UI", function(state)
         end)
     end
 end)
+
+-- If loaded in active state, fire the hidden loop immediately
+if deltaHiddenState then
+    task.spawn(function()
+        while deltaHiddenState do
+            pcall(function()
+                for _, gui in ipairs(CoreGui:GetChildren()) do
+                    if gui:IsA("ScreenGui") and gui ~= ScreenGui then
+                        local isRandomized = false
+                        local name = gui.Name
+                        for i = 1, #name do
+                            local character = name:sub(i, i)
+                            if not character:match("[%w_]") then
+                                isRandomized = true
+                                break
+                            end
+                        end
+                        if isRandomized or gui:FindFirstChild("Logo") or gui:FindFirstChild("Main") then
+                            gui.Enabled = false
+                        end
+                    end
+                end
+            end)
+            task.wait(0.5)
+        end
+    end)
+end
 
 CreateMiscButton("Crazy FPS Boost (Color Preserved)", function()
     ShowNotification("Executing Clean FPS Optimization...", Theme.Accent)
