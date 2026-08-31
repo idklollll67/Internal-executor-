@@ -44,7 +44,6 @@ end
 
 local deltaHiddenState = loadDeltaHideState()
 
--- Apply initial loaded state immediately upon script startup
 task.spawn(function()
     if deltaHiddenState then
         pcall(function()
@@ -186,7 +185,6 @@ OpenCloseBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = not MainFrame.Visible
 end)
 
--- Draggable Toggle Interaction
 local dragging, dragInput, dragStart, startPos
 OpenCloseBtn.InputBegan:Connect(function(input)
     if isUiLocked then return end
@@ -217,7 +215,6 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
--- TOPBAR TITLE
 local TopBar = Instance.new("Frame")
 TopBar.Size = UDim2.new(1, 0, 0, 42)
 TopBar.BackgroundColor3 = Theme.Sidebar
@@ -246,7 +243,7 @@ HubTitle.TextSize = 10
 HubTitle.TextXAlignment = Enum.TextXAlignment.Left
 HubTitle.Parent = TopBar
 
--- CHAT COMMANDS FUNCTIONALITY
+-- CHAT COMMANDS
 LocalPlayer.Chatted:Connect(function(message)
     local args = {}
     for word in message:gmatch("%S+") do
@@ -312,7 +309,6 @@ LocalPlayer.Chatted:Connect(function(message)
     end
 end)
 
--- LEFT-SIDE NAVIGATION CONTAINER
 local NavContainer = Instance.new("ScrollingFrame")
 NavContainer.Size = UDim2.new(0, 96, 1, -84)
 NavContainer.Position = UDim2.new(0, 0, 0, 45)
@@ -332,7 +328,6 @@ NavLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
     NavContainer.CanvasSize = UDim2.new(0, 0, 0, NavLayout.AbsoluteContentSize.Y + 10)
 end)
 
--- USER PROFILE SECTION
 local UserProfileFrame = Instance.new("Frame")
 UserProfileFrame.Size = UDim2.new(0, 84, 0, 32)
 UserProfileFrame.Position = UDim2.new(0, 6, 1, -37)
@@ -370,7 +365,6 @@ UserNameLabel.TextTruncate = Enum.TextTruncate.AtEnd
 UserNameLabel.TextXAlignment = Enum.TextXAlignment.Left
 UserNameLabel.Parent = UserProfileFrame
 
--- CONTENT CONTAINER
 local ContentContainer = Instance.new("Frame")
 ContentContainer.Size = UDim2.new(1, -108, 1, -56)
 ContentContainer.Position = UDim2.new(0, 102, 0, 50)
@@ -392,6 +386,7 @@ local SearchPanel = CreatePanel()
 local MiscPanel = CreatePanel()
 local AiPanel = CreatePanel()
 local CommandsPanel = CreatePanel()
+local CreateMenuPanel = CreatePanel()
 local AdminPanel = CreatePanel()
 
 SavedPanel.Visible = true
@@ -421,6 +416,7 @@ local function CreateNavButton(nameText, panel)
         MiscPanel.Visible = false
         AiPanel.Visible = false
         CommandsPanel.Visible = false
+        CreateMenuPanel.Visible = false
         if AdminPanel then AdminPanel.Visible = false end
         panel.Visible = true
     end)
@@ -432,6 +428,7 @@ CreateNavButton("Search", SearchPanel)
 CreateNavButton("Misc", MiscPanel)
 CreateNavButton("AI Chat", AiPanel)
 CreateNavButton("Commands", CommandsPanel)
+CreateNavButton("Create Menu", CreateMenuPanel)
 
 if LocalPlayer.Name == "dontaskmekdkdkdkkd" then
     CreateNavButton("Admin", AdminPanel)
@@ -440,6 +437,7 @@ end
 NavContainer.CanvasSize = UDim2.new(0, 0, 0, NavLayout.AbsoluteContentSize.Y + 10)
 
 local UserFileName = ConfigFolderName .. "/" .. LocalPlayer.Name .. "_SavedScripts.json"
+local CustomMenusFileName = ConfigFolderName .. "/CustomMenusData.json"
 local GlobalForcedFile = ConfigFolderName .. "/ForcedLockedScripts.json"
 
 local ForcedLockedList = {}
@@ -483,6 +481,410 @@ local function LoadConfigsFromFile()
 end
 
 LoadConfigsFromFile()
+
+-- CUSTOM MENUS PERSISTENCE & LOADING SYSTEM
+local CustomMenusList = {}
+
+local function SaveCustomMenusToFile()
+    pcall(function()
+        writefile(CustomMenusFileName, HttpService:JSONEncode(CustomMenusList))
+    end)
+end
+
+local function LoadCustomMenusFromFile()
+    pcall(function()
+        if isfile(CustomMenusFileName) then
+            local decoded = HttpService:JSONDecode(readfile(CustomMenusFileName))
+            if type(decoded) == "table" then
+                CustomMenusList = decoded
+            end
+        end
+    end)
+end
+
+LoadCustomMenusFromFile()
+
+-- RENDER CUSTOM MENUS FOR AUTHORIZED USERS
+local function RenderCustomMenus()
+    for _, child in ipairs(ScreenGui:GetChildren()) do
+        if child.Name:sub(1, 11) == "CustomMenu_" then
+            child:Destroy()
+        end
+    end
+
+    for _, menuData in ipairs(CustomMenusList) do
+        local allowed = false
+        if menuData.owner == LocalPlayer.Name then
+            allowed = true
+        else
+            for _, allowedName in ipairs(menuData.whitelist) do
+                if allowedName:lower() == LocalPlayer.Name:lower() then
+                    allowed = true
+                    break
+                end
+            end
+        end
+
+        if allowed then
+            local cGui = Instance.new("ScreenGui")
+            cGui.Name = "CustomMenu_" .. menuData.title
+            cGui.ResetOnSpawn = false
+            cGui.Parent = ParentGui
+
+            local frame = Instance.new("Frame")
+            frame.Size = UDim2.new(0, 320, 0, 220)
+            frame.Position = UDim2.new(0.5, -160, 0.5, -110)
+            frame.BackgroundColor3 = Theme.Background
+            frame.Parent = cGui
+
+            local cStroke = Instance.new("UIStroke")
+            cStroke.Color = Theme.Border
+            cStroke.Parent = frame
+
+            local cCorner = Instance.new("UICorner")
+            cCorner.CornerRadius = UDim.new(0, 10)
+            cCorner.Parent = frame
+
+            local top = Instance.new("Frame")
+            top.Size = UDim2.new(1, 0, 0, 32)
+            top.BackgroundColor3 = Theme.Sidebar
+            top.Parent = frame
+
+            local topCorner = Instance.new("UICorner")
+            topCorner.CornerRadius = UDim.new(0, 10)
+            topCorner.Parent = top
+
+            local tLbl = Instance.new("TextLabel")
+            tLbl.Size = UDim2.new(1, -40, 1, 0)
+            tLbl.Position = UDim2.new(0, 12, 0, 0)
+            tLbl.BackgroundTransparency = 1
+            tLbl.Font = Enum.Font.GothamBold
+            tLbl.Text = menuData.title .. " (By " .. menuData.owner .. ")"
+            tLbl.TextColor3 = Theme.Text
+            tLbl.TextSize = 9
+            tLbl.TextXAlignment = Enum.TextXAlignment.Left
+            tLbl.Parent = top
+
+            local closeCustom = Instance.new("TextButton")
+            closeCustom.Size = UDim2.new(0, 24, 0, 24)
+            closeCustom.Position = UDim2.new(1, -28, 0, 4)
+            closeCustom.BackgroundColor3 = Theme.Element
+            closeCustom.Font = Enum.Font.GothamBold
+            closeCustom.Text = "X"
+            closeCustom.TextColor3 = Theme.SubText
+            closeCustom.TextSize = 9
+            closeCustom.Parent = top
+
+            local ccCorner = Instance.new("UICorner")
+            ccCorner.CornerRadius = UDim.new(0, 6)
+            ccCorner.Parent = closeCustom
+
+            closeCustom.MouseButton1Click:Connect(function()
+                cGui:Destroy()
+            end)
+
+            local cScroll = Instance.new("ScrollingFrame")
+            cScroll.Size = UDim2.new(1, -16, 1, -44)
+            cScroll.Position = UDim2.new(0, 8, 0, 38)
+            cScroll.BackgroundTransparency = 1
+            cScroll.ScrollBarThickness = 2
+            cScroll.Parent = frame
+
+            local cLayout = Instance.new("UIListLayout")
+            cLayout.Padding = UDim.new(0, 6)
+            cLayout.Parent = cScroll
+
+            for _, scriptItem in ipairs(menuData.scripts) do
+                local runScriptBtn = Instance.new("TextButton")
+                runScriptBtn.Size = UDim2.new(1, 0, 0, 30)
+                runScriptBtn.BackgroundColor3 = Theme.Container
+                runScriptBtn.Font = Enum.Font.GothamMedium
+                runScriptBtn.Text = "Run: " .. scriptItem.name
+                runScriptBtn.TextColor3 = Theme.Text
+                runScriptBtn.TextSize = 9
+                runScriptBtn.Parent = cScroll
+
+                local rCorner = Instance.new("UICorner")
+                rCorner.CornerRadius = UDim.new(0, 6)
+                rCorner.Parent = runScriptBtn
+
+                local rStroke = Instance.new("UIStroke")
+                rStroke.Color = Theme.Border
+                rStroke.Parent = runScriptBtn
+
+                runScriptBtn.MouseButton1Click:Connect(function()
+                    pcall(function()
+                        local fn = (loadstring or load)(scriptItem.code)
+                        if fn then task.spawn(fn) end
+                    end)
+                    ShowNotification("Executed custom menu script: " .. scriptItem.name, Theme.Accent)
+                end)
+            end
+            cScroll.CanvasSize = UDim2.new(0, 0, 0, cLayout.AbsoluteContentSize.Y + 10)
+        end
+    end
+end
+
+-- CREATE MENU PANEL UI BUILDER
+local CreateScroll = Instance.new("ScrollingFrame")
+CreateScroll.Size = UDim2.new(1, 0, 1, 0)
+CreateScroll.BackgroundTransparency = 1
+CreateScroll.ScrollBarThickness = 3
+CreateScroll.ScrollBarImageColor3 = Theme.Border
+CreateScroll.Parent = CreateMenuPanel
+
+local CreateLayout = Instance.new("UIListLayout")
+CreateLayout.Padding = UDim.new(0, 8)
+CreateLayout.Parent = CreateScroll
+
+CreateLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    CreateScroll.CanvasSize = UDim2.new(0, 0, 0, CreateLayout.AbsoluteContentSize.Y + 10)
+end)
+
+local CreateTitleLabel = Instance.new("TextLabel")
+CreateTitleLabel.Size = UDim2.new(1, 0, 0, 18)
+CreateTitleLabel.BackgroundTransparency = 1
+CreateTitleLabel.Font = Enum.Font.GothamBold
+CreateTitleLabel.Text = "-- BUILD YOUR CUSTOM MENU --"
+CreateTitleLabel.TextColor3 = Theme.Text
+CreateTitleLabel.TextSize = 9
+CreateTitleLabel.Parent = CreateScroll
+
+local MenuNameInput = Instance.new("TextBox")
+MenuNameInput.Size = UDim2.new(1, 0, 0, 32)
+MenuNameInput.BackgroundColor3 = Theme.Container
+MenuNameInput.Font = Enum.Font.GothamMedium
+MenuNameInput.PlaceholderText = "Menu Title..."
+MenuNameInput.Text = ""
+MenuNameInput.TextColor3 = Theme.Text
+MenuNameInput.PlaceholderColor3 = Theme.SubText
+MenuNameInput.TextSize = 9
+MenuNameInput.Parent = CreateScroll
+
+local MNCorner = Instance.new("UICorner")
+MNCorner.CornerRadius = UDim.new(0, 8)
+MNCorner.Parent = MenuNameInput
+
+local MNStroke = Instance.new("UIStroke")
+MNStroke.Color = Theme.Border
+MNStroke.Parent = MenuNameInput
+
+local WhitelistInput = Instance.new("TextBox")
+WhitelistInput.Size = UDim2.new(1, 0, 0, 32)
+WhitelistInput.BackgroundColor3 = Theme.Container
+WhitelistInput.Font = Enum.Font.GothamMedium
+WhitelistInput.PlaceholderText = "Allowed Users (Comma separated usernames)..."
+WhitelistInput.Text = ""
+WhitelistInput.TextColor3 = Theme.Text
+WhitelistInput.PlaceholderColor3 = Theme.SubText
+WhitelistInput.TextSize = 9
+WhitelistInput.Parent = CreateScroll
+
+local WLCorner = Instance.new("UICorner")
+WLCorner.CornerRadius = UDim.new(0, 8)
+WLCorner.Parent = WhitelistInput
+
+local WLStroke = Instance.new("UIStroke")
+WLStroke.Color = Theme.Border
+WLStroke.Parent = WhitelistInput
+
+local AddScriptsHeader = Instance.new("TextLabel")
+AddScriptsHeader.Size = UDim2.new(1, 0, 0, 18)
+AddScriptsHeader.BackgroundTransparency = 1
+AddScriptsHeader.Font = Enum.Font.GothamBold
+AddScriptsHeader.Text = "Scripts Included in Menu:"
+AddScriptsHeader.TextColor3 = Theme.SubText
+AddScriptsHeader.TextSize = 8
+AddScriptsHeader.TextXAlignment = Enum.TextXAlignment.Left
+AddScriptsHeader.Parent = CreateScroll
+
+local AttachedScriptsList = {}
+
+local ScriptListDisplay = Instance.new("Frame")
+ScriptListDisplay.Size = UDim2.new(1, 0, 0, 80)
+ScriptListDisplay.BackgroundColor3 = Theme.Container
+ScriptListDisplay.Parent = CreateScroll
+
+local SDLCorner = Instance.new("UICorner")
+SDLCorner.CornerRadius = UDim.new(0, 8)
+SDLCorner.Parent = ScriptListDisplay
+
+local SDLStroke = Instance.new("UIStroke")
+SDLStroke.Color = Theme.Border
+SDLStroke.Parent = ScriptListDisplay
+
+local AttachedScroll = Instance.new("ScrollingFrame")
+AttachedScroll.Size = UDim2.new(1, -8, 1, -8)
+AttachedScroll.Position = UDim2.new(0, 4, 0, 4)
+AttachedScroll.BackgroundTransparency = 1
+AttachedScroll.ScrollBarThickness = 2
+AttachedScroll.Parent = ScriptListDisplay
+
+local AttachedLayout = Instance.new("UIListLayout")
+AttachedLayout.Padding = UDim.new(0, 4)
+AttachedLayout.Parent = AttachedScroll
+
+AttachedLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    AttachedScroll.CanvasSize = UDim2.new(0, 0, 0, AttachedLayout.AbsoluteContentSize.Y + 5)
+end)
+
+local function RefreshAttachedScriptsUI()
+    for _, child in ipairs(AttachedScroll:GetChildren()) do
+        if child:IsA("Frame") then child:Destroy() end
+    end
+    for i, sData in ipairs(AttachedScriptsList) do
+        local row = Instance.new("Frame")
+        row.Size = UDim2.new(1, 0, 0, 24)
+        row.BackgroundTransparency = 1
+        row.Parent = AttachedScroll
+
+        local rLbl = Instance.new("TextLabel")
+        rLbl.Size = UDim2.new(1, -30, 1, 0)
+        rLbl.BackgroundTransparency = 1
+        rLbl.Font = Enum.Font.GothamMedium
+        rLbl.Text = "- " .. sData.name
+        rLbl.TextColor3 = Theme.Text
+        rLbl.TextSize = 8
+        rLbl.TextXAlignment = Enum.TextXAlignment.Left
+        rLbl.Parent = row
+
+        local remBtn = Instance.new("TextButton")
+        remBtn.Size = UDim2.new(0, 24, 0, 20)
+        remBtn.Position = UDim2.new(1, -24, 0, 2)
+        remBtn.BackgroundColor3 = Theme.Element
+        remBtn.Font = Enum.Font.GothamBold
+        remBtn.Text = "X"
+        remBtn.TextColor3 = Color3.fromRGB(240, 100, 100)
+        remBtn.TextSize = 8
+        remBtn.Parent = row
+
+        local rcCorner = Instance.new("UICorner")
+        rcCorner.CornerRadius = UDim.new(0, 4)
+        rcCorner.Parent = remBtn
+
+        remBtn.MouseButton1Click:Connect(function()
+            table.remove(AttachedScriptsList, i)
+            RefreshAttachedScriptsUI()
+        end)
+    end
+end
+
+local AddScriptToMenuName = Instance.new("TextBox")
+AddScriptToMenuName.Size = UDim2.new(1, 0, 0, 30)
+AddScriptToMenuName.BackgroundColor3 = Theme.Container
+AddScriptToMenuName.Font = Enum.Font.GothamMedium
+AddScriptToMenuName.PlaceholderText = "Script Name..."
+AddScriptToMenuName.Text = ""
+AddScriptToMenuName.TextColor3 = Theme.Text
+AddScriptToMenuName.PlaceholderColor3 = Theme.SubText
+AddScriptToMenuName.TextSize = 9
+AddScriptToMenuName.Parent = CreateScroll
+
+local ASTMNCorner = Instance.new("UICorner")
+ASTMNCorner.CornerRadius = UDim.new(0, 8)
+ASTMNCorner.Parent = AddScriptToMenuName
+
+local ASTMNStroke = Instance.new("UIStroke")
+ASTMNStroke.Color = Theme.Border
+ASTMNStroke.Parent = AddScriptToMenuName
+
+local AddScriptToMenuCode = Instance.new("TextBox")
+AddScriptToMenuCode.Size = UDim2.new(1, 0, 0, 60)
+AddScriptToMenuCode.BackgroundColor3 = Theme.Container
+AddScriptToMenuCode.Font = Enum.Font.Code
+AddScriptToMenuCode.MultiLine = true
+AddScriptToMenuCode.PlaceholderText = "-- Luau Script Code..."
+AddScriptToMenuCode.Text = ""
+AddScriptToMenuCode.TextColor3 = Theme.Text
+AddScriptToMenuCode.PlaceholderColor3 = Theme.SubText
+AddScriptToMenuCode.TextSize = 8
+AddScriptToMenuCode.TextXAlignment = Enum.TextXAlignment.Left
+AddScriptToMenuCode.TextYAlignment = Enum.TextYAlignment.Top
+AddScriptToMenuCode.Parent = CreateScroll
+
+local ASTMCCorner = Instance.new("UICorner")
+ASTMCCorner.CornerRadius = UDim.new(0, 8)
+ASTMCCorner.Parent = AddScriptToMenuCode
+
+local ASTMCStroke = Instance.new("UIStroke")
+ASTMCStroke.Color = Theme.Border
+ASTMCStroke.Parent = AddScriptToMenuCode
+
+local AddScriptToMenuBtn = Instance.new("TextButton")
+AddScriptToMenuBtn.Size = UDim2.new(1, 0, 0, 28)
+AddScriptToMenuBtn.BackgroundColor3 = Theme.Element
+AddScriptToMenuBtn.Font = Enum.Font.GothamBold
+AddScriptToMenuBtn.Text = "+ Add Script to Menu"
+AddScriptToMenuBtn.TextColor3 = Theme.Text
+AddScriptToMenuBtn.TextSize = 8
+AddScriptToMenuBtn.Parent = CreateScroll
+
+local ASTMBugCorner = Instance.new("UICorner")
+ASTMBugCorner.CornerRadius = UDim.new(0, 8)
+ASTMBugCorner.Parent = AddScriptToMenuBtn
+
+local ASTMBugStroke = Instance.new("UIStroke")
+ASTMBugStroke.Color = Theme.Border
+ASTMBugStroke.Parent = AddScriptToMenuBtn
+
+AddScriptToMenuBtn.MouseButton1Click:Connect(function()
+    if AddScriptToMenuName.Text ~= "" and AddScriptToMenuCode.Text ~= "" then
+        table.insert(AttachedScriptsList, {name = AddScriptToMenuName.Text, code = AddScriptToMenuCode.Text})
+        AddScriptToMenuName.Text = ""
+        AddScriptToMenuCode.Text = ""
+        RefreshAttachedScriptsUI()
+        ShowNotification("Added script to your custom menu", Theme.Accent)
+    else
+        ShowNotification("Provide both name and code for the script!", Color3.fromRGB(240, 100, 100))
+    end
+end)
+
+local PublishMenuBtn = Instance.new("TextButton")
+PublishMenuBtn.Size = UDim2.new(1, 0, 0, 34)
+PublishMenuBtn.BackgroundColor3 = Theme.Accent
+PublishMenuBtn.Font = Enum.Font.GothamBold
+PublishMenuBtn.Text = "Publish Custom Menu"
+PublishMenuBtn.TextColor3 = Theme.Text
+PublishMenuBtn.TextSize = 9
+PublishMenuBtn.Parent = CreateScroll
+
+local PMBCorner = Instance.new("UICorner")
+PMBCorner.CornerRadius = UDim.new(0, 8)
+PMBCorner.Parent = PublishMenuBtn
+
+local PMBStroke = Instance.new("UIStroke")
+PMBStroke.Color = Theme.Border
+PMBStroke.Parent = PublishMenuBtn
+
+PublishMenuBtn.MouseButton1Click:Connect(function()
+    if MenuNameInput.Text ~= "" and #AttachedScriptsList > 0 then
+        local whitelistTable = {}
+        for username in WhitelistInput.Text:gmatch("[^,%s]+") do
+            table.insert(whitelistTable, username)
+        end
+
+        local newMenu = {
+            title = MenuNameInput.Text,
+            owner = LocalPlayer.Name,
+            whitelist = whitelistTable,
+            scripts = AttachedScriptsList
+        }
+
+        table.insert(CustomMenusList, newMenu)
+        SaveCustomMenusToFile()
+        RenderCustomMenus()
+
+        MenuNameInput.Text = ""
+        WhitelistInput.Text = ""
+        AttachedScriptsList = {}
+        RefreshAttachedScriptsUI()
+        ShowNotification("Custom menu successfully published and rendered!", Theme.Accent)
+    else
+        ShowNotification("Provide a title and at least one script to publish!", Color3.fromRGB(240, 100, 100))
+    end
+end)
+
+RenderCustomMenus()
 
 -- SAVED SYSTEM PANEL & EDIT MODAL
 local UploadBtn = Instance.new("TextButton")
@@ -1010,20 +1412,24 @@ AiSendBtn.MouseButton1Click:Connect(function()
     AppendChatMessage("You", text, true)
     
     task.spawn(function()
-        local ok, res = pcall(function()
-            local req = request or syn.request or http_request
-            if not req then return nil end
-            
-            local payload = {
-                model = "openai/gpt-oss-20b",
-                messages = {
-                    {role = "system", content = "You are a conversational general-purpose AI chatbot. Answer questions conversationally and directly."},
-                    {role = "user", content = text}
-                },
-                temperature = 0.7
-            }
-            
-            local response = req({
+        local req = (syn and syn.request) or request or http_request or (fluxus and fluxus.request)
+        if not req then
+            AppendChatMessage("AI", "Error: Executor does not support HTTP requests.", false)
+            ShowNotification("Executor missing request capability!", Color3.fromRGB(240, 100, 100))
+            return
+        end
+        
+        local payload = {
+            model = "openai/gpt-oss-20b",
+            messages = {
+                {role = "system", content = "You are a helpful conversational AI assistant."},
+                {role = "user", content = text}
+            },
+            temperature = 0.7
+        }
+        
+        local success, response = pcall(function()
+            return req({
                 Url = "https://api.groq.com/openai/v1/chat/completions",
                 Method = "POST",
                 Headers = {
@@ -1032,17 +1438,25 @@ AiSendBtn.MouseButton1Click:Connect(function()
                 },
                 Body = HttpService:JSONEncode(payload)
             })
-            
-            if response and response.Body then
-                return HttpService:JSONDecode(response.Body)
-            end
         end)
         
-        if ok and res and res.choices and res.choices[1] and res.choices[1].message then
-            local reply = res.choices[1].message.content
-            AppendChatMessage("AI", reply, false)
+        if success and response then
+            if response.StatusCode == 200 and response.Body then
+                local decodeOk, decoded = pcall(function()
+                    return HttpService:JSONDecode(response.Body)
+                end)
+                
+                if decodeOk and decoded and decoded.choices and decoded.choices[1] then
+                    local reply = decoded.choices[1].message.content
+                    AppendChatMessage("AI", reply, false)
+                else
+                    AppendChatMessage("AI", "Error: Failed to parse API JSON response.", false)
+                end
+            else
+                AppendChatMessage("AI", "Error: Server returned status " .. tostring(response.StatusCode), false)
+            end
         else
-            AppendChatMessage("AI", "Error fetching response or invalid API response.", false)
+            AppendChatMessage("AI", "Error: Connection timed out or blocked.", false)
         end
     end)
 end)
@@ -1782,5 +2196,4 @@ JoinJobBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- Trigger initial canvas update calculation
 MiscScroll.CanvasSize = UDim2.new(0, 0, 0, MiscLayout.AbsoluteContentSize.Y + 10)
